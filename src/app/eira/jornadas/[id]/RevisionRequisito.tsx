@@ -18,7 +18,6 @@ const SUGERENCIAS: Record<string, string[]> = {
     "Se modificó una cláusula institucional de EIRA. Usen la versión oficial sin cambios.",
   ],
   fotos_espacio: ["La foto de la toma eléctrica está borrosa y no permite ver la distancia al área de trabajo."],
-  logotipos: ["Es una captura de pantalla borrosa. Necesitamos PNG transparente, SVG o AI."],
 };
 
 export function RevisionRequisito({

@@ -5,6 +5,7 @@ export type GrupoRequisito = "juridico" | "identidad" | "evidencia";
 export type ModuloClave = "unidad_movil" | "comunidad_indigena" | "estancia_multiple";
 export type Rol = "eira" | "municipio" | "sistema";
 export type MedioContacto = "whatsapp" | "correo" | "llamada";
+export type RangoPersonas = "menos_50" | "50_100" | "100_200" | "mas_200";
 
 export interface VersionArchivo {
   numero: number;
@@ -63,6 +64,7 @@ export interface MensajeAyuda {
   fecha: string;
   mensaje: string;
   atendido: boolean;
+  tipo?: "pregunta" | "cambio_estimado";
 }
 
 export interface Jornada {
@@ -79,13 +81,14 @@ export interface Jornada {
   plantilla: string;
   enlaceEira: { nombre: string; cargo: string; telefono: string; correo: string };
   enlaceMunicipal: Contacto;
-  metaPacientes: number;
+  estimadoPersonas: RangoPersonas;
   creadaEn: string;
   requisitos: Requisito[];
   mensajes: MensajeAyuda[];
 }
 
 export interface BaseDatos {
+  esquema?: number;
   version: number; // se incrementa en cada escritura (para refresco en tiempo real)
   actualizadoEn: string;
   jornadas: Jornada[];

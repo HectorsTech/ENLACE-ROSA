@@ -4,7 +4,8 @@ import { CalendarDays, ChevronRight, MapPin, UserRound } from "lucide-react";
 import { BarraProgreso } from "@/components/Insignias";
 import { GRUPOS } from "@/lib/catalogo";
 import { jornadaPorToken } from "@/lib/db";
-import { formatoFecha, textoFaltanDias, textoVencimiento } from "@/lib/fechas";
+import { fechaLimiteDesde, formatoFecha, textoFaltanDias, textoVencimiento } from "@/lib/fechas";
+import { EstimadoPersonas } from "./EstimadoPersonas";
 import { progreso, resumenAvance } from "@/lib/logica";
 import type { GrupoRequisito } from "@/lib/types";
 import { TarjetaRequisito } from "./TarjetaRequisito";
@@ -48,6 +49,13 @@ export default async function PortalMunicipal({ params }: { params: Promise<{ to
           <p className="mt-2 text-xs text-pizarra-suave">{resumenAvance(j)}</p>
         </div>
       </section>
+
+      <EstimadoPersonas
+        jornadaId={j.id}
+        valor={j.estimadoPersonas}
+        limiteTexto={formatoFecha(fechaLimiteDesde(j.fecha, 5))}
+        editable={ahora <= new Date(fechaLimiteDesde(j.fecha, 5)).getTime()}
+      />
 
       {grupos.map(({ g, reqs }) =>
         reqs.length === 0 ? null : (

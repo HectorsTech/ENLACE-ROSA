@@ -14,7 +14,7 @@ import {
   Users,
 } from "lucide-react";
 import { BarraProgreso, ChipModulo, EstadoBadge, SemaforoBadge } from "@/components/Insignias";
-import { NOMBRE_MODULO } from "@/lib/catalogo";
+import { NOMBRE_MODULO, TEXTO_RANGO } from "@/lib/catalogo";
 import { listarJornadas } from "@/lib/db";
 import { formatoFecha, formatoFechaLarga, formatoFechaHora, textoFaltanDias, textoVencimiento } from "@/lib/fechas";
 import { conteo, diagnostico, observados, progreso, vencenEn } from "@/lib/logica";
@@ -168,7 +168,7 @@ export default async function TableroEira({ searchParams }: { searchParams: Prom
                         <p className="mt-1 flex items-center gap-1.5 text-sm font-semibold">
                           <CalendarDays className="h-4 w-4 text-rosa" /> {formatoFecha(j.fecha)}
                         </p>
-                        <p className="text-xs text-pizarra-suave">{textoFaltanDias(j.fecha, ahora)} · meta {j.metaPacientes} mujeres</p>
+                        <p className="text-xs text-pizarra-suave">{textoFaltanDias(j.fecha, ahora)} · {TEXTO_RANGO[j.estimadoPersonas]} personas</p>
                       </div>
                       <div>
                         <div className="flex items-center justify-between">

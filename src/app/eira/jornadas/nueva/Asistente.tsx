@@ -18,7 +18,7 @@ import {
   Truck,
 } from "lucide-react";
 import { crearJornada, type NuevaJornadaInput } from "@/lib/actions";
-import { GRUPOS, MODULOS, PLANTILLA_BASE, REQUISITOS_BASE, SERVICIOS_EIRA } from "@/lib/catalogo";
+import { GRUPOS, MODULOS, PLANTILLA_BASE, RANGOS_PERSONAS, REFERENCIA_EDADES, REQUISITOS_BASE, SERVICIOS_EIRA, TEXTO_RANGO } from "@/lib/catalogo";
 import { fechaLimiteDesde, fechaMx, formatoFecha } from "@/lib/fechas";
 import type { ModuloClave } from "@/lib/types";
 
@@ -52,7 +52,7 @@ export function Asistente({ fechaSugerida, fechaMinima }: { fechaSugerida: strin
     fecha: fechaSugerida,
     servicios: [SERVICIOS_EIRA[0], SERVICIOS_EIRA[1], SERVICIOS_EIRA[2]],
     modulos: [],
-    metaPacientes: 150,
+    estimadoPersonas: "50_100",
     enlaceNombre: "",
     enlaceCargo: "",
     enlaceCorreo: "",
@@ -129,9 +129,6 @@ export function Asistente({ fechaSugerida, fechaMinima }: { fechaSugerida: strin
               <Campo etiqueta="Día de la jornada (D) *">
                 <input type="date" className="campo" min={fechaMinima} value={f.fecha} onChange={(e) => set("fecha", e.target.value)} />
               </Campo>
-              <Campo etiqueta="Meta de mujeres atendidas">
-                <input type="number" min={0} className="campo" value={f.metaPacientes} onChange={(e) => set("metaPacientes", Number(e.target.value))} />
-              </Campo>
             </div>
             {fechaIso && (
               <p className="rounded-2xl bg-crema px-4 py-3 text-sm">
@@ -161,6 +158,29 @@ export function Asistente({ fechaSugerida, fechaMinima }: { fechaSugerida: strin
                   );
                 })}
               </div>
+            </div>
+
+            <div>
+              <p className="etiqueta">Estimado de personas a atender</p>
+              <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+                {RANGOS_PERSONAS.map((r) => {
+                  const on = f.estimadoPersonas === r.clave;
+                  return (
+                    <button
+                      key={r.clave}
+                      type="button"
+                      aria-pressed={on}
+                      onClick={() => set("estimadoPersonas", r.clave)}
+                      className={`rounded-2xl border px-3 py-2.5 text-sm font-medium transition ${
+                        on ? "border-rosa bg-rosa-50 text-rosa-700" : "border-borde hover:border-rosa-200"
+                      }`}
+                    >
+                      {r.texto}
+                    </button>
+                  );
+                })}
+              </div>
+              <p className="mt-2 text-xs text-pizarra-suave">{REFERENCIA_EDADES} El municipio podrá modificarlo hasta 5 días antes de la visita.</p>
             </div>
 
             <div className="rounded-2xl border border-guinda-100 bg-guinda-50/40 p-5">
@@ -277,7 +297,7 @@ export function Asistente({ fechaSugerida, fechaMinima }: { fechaSugerida: strin
                 ["Sede", f.sede],
                 ["Día (D)", fechaIso ? formatoFecha(fechaIso) : "—"],
                 ["Fecha límite general", fechaIso ? formatoFecha(fechaLimiteDesde(fechaIso, 5)) : "—"],
-                ["Meta", `${f.metaPacientes} mujeres`],
+                ["Personas estimadas", TEXTO_RANGO[f.estimadoPersonas]],
               ]} />
               <Resumen titulo="Enlace municipal" filas={[
                 ["Nombre", f.enlaceNombre || "Por confirmar"],

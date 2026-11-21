@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { crearSeed } from "./seed";
+import { crearSeed, ESQUEMA } from "./seed";
 import type { BaseDatos, Jornada } from "./types";
 
 // Lectura en cada petición para que los cambios de /gob se vean al instante en /eira y viceversa.
@@ -26,10 +26,11 @@ function escribir(db: BaseDatos) {
 export function leerDB(): BaseDatos {
   try {
     const db = JSON.parse(fs.readFileSync(RUTA, "utf8")) as BaseDatos;
+    if (db.esquema !== ESQUEMA) throw new Error("esquema obsoleto");
     global_.__enlaceRosaDB = db;
     return db;
   } catch {
-    if (global_.__enlaceRosaDB) return global_.__enlaceRosaDB;
+    if (global_.__enlaceRosaDB?.esquema === ESQUEMA) return global_.__enlaceRosaDB;
     const db = crearSeed();
     escribir(db);
     return db;

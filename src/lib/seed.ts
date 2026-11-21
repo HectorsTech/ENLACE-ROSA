@@ -63,7 +63,7 @@ interface OpcionesJornada {
   creadaHaceHoras: number;
   servicios: string[];
   modulos: ModuloClave[];
-  metaPacientes: number;
+  estimadoPersonas: Jornada["estimadoPersonas"];
   enlaceEira: Jornada["enlaceEira"];
   enlaceMunicipal: Jornada["enlaceMunicipal"];
   historia: Record<string, Paso[]>;
@@ -92,7 +92,7 @@ function crear(o: OpcionesJornada): Jornada {
     plantilla: PLANTILLA_BASE,
     enlaceEira: o.enlaceEira,
     enlaceMunicipal: o.enlaceMunicipal,
-    metaPacientes: o.metaPacientes,
+    estimadoPersonas: o.estimadoPersonas,
     creadaEn,
     requisitos,
     mensajes: o.mensajes ?? [],
@@ -101,6 +101,8 @@ function crear(o: OpcionesJornada): Jornada {
 
 const LUCIA = { nombre: "Lucía Fernández", cargo: "Coordinadora de Jornadas EIRA", telefono: "55 4120 8890", correo: "lucia.fernandez@eira.org.mx" };
 const ANDREA = { nombre: "Andrea Márquez", cargo: "Enlace operativo EIRA", telefono: "55 3318 2271", correo: "andrea.marquez@eira.org.mx" };
+
+export const ESQUEMA = 2;
 
 export function crearSeed(): BaseDatos {
   // 1) Naucalpan — 65 %, carta observada y 2 pendientes críticos próximos a vencer.
@@ -116,7 +118,7 @@ export function crearSeed(): BaseDatos {
     creadaHaceHoras: 24 * 9,
     servicios: ["Mastografía (40–69 años)", "Exploración clínica de mama", "Papanicolaou (25 años o más)"],
     modulos: ["unidad_movil"],
-    metaPacientes: 180,
+    estimadoPersonas: "100_200",
     enlaceEira: LUCIA,
     enlaceMunicipal: {
       nombre: "Lic. Mariana Robles Aguilar",
@@ -141,17 +143,10 @@ export function crearSeed(): BaseDatos {
         { t: "subida", archivo: "Oficio_Jurisdiccion_Sanitaria_III.pdf", tamano: "640 KB", por: nau, hace: 96 },
         { t: "aprobado", por: LUCIA.nombre, hace: 90 },
       ],
-      logotipos: [
-        { t: "subida", archivo: "captura_escudo_whatsapp.jpg", tamano: "88 KB", por: nau, hace: 170 },
-        { t: "observado", por: ANDREA.nombre, hace: 160, motivo: "Es una captura de pantalla borrosa. Necesitamos el escudo en PNG transparente, SVG o AI." },
-        { t: "subida", archivo: "Escudo_Naucalpan_y_DIF.svg", tamano: "312 KB", por: nau, hace: 140 },
-        { t: "aprobado", por: ANDREA.nombre, hace: 130 },
-      ],
       ficha_condiciones: [
         { t: "subida", archivo: "Ficha_condiciones_Naucalpan.pdf", tamano: "420 KB", por: nau, hace: 150 },
         { t: "aprobado", por: LUCIA.nombre, hace: 140 },
       ],
-      lista_registro: [{ t: "subida", archivo: "Registro_preliminar_Naucalpan.xlsx", tamano: "96 KB", por: nau, hace: 6 }],
       confirmacion_enlace: [
         { t: "subida", archivo: "Confirmacion_enlace_y_transporte.pdf", tamano: "210 KB", por: nau, hace: 72 },
         { t: "aprobado", por: ANDREA.nombre, hace: 70 },
@@ -199,7 +194,7 @@ export function crearSeed(): BaseDatos {
       "Plática de autoexploración",
     ],
     modulos: ["estancia_multiple"],
-    metaPacientes: 240,
+    estimadoPersonas: "mas_200",
     enlaceEira: LUCIA,
     enlaceMunicipal: {
       nombre: "Ing. Roberto Salgado Peña",
@@ -214,9 +209,7 @@ export function crearSeed(): BaseDatos {
       permiso_espacio: todo("Permiso_uso_CDC_San_Pablo.pdf", "540 KB", 250),
       proteccion_civil: todo("Dictamen_Proteccion_Civil_Toluca.pdf", "880 KB", 240),
       jurisdiccion_sanitaria: todo("Vinculacion_Jurisdiccion_Toluca.pdf", "610 KB", 300),
-      logotipos: todo("Logos_Toluca_DIF.ai", "4.2 MB", 400),
       ficha_condiciones: todo("Ficha_condiciones_Toluca.pdf", "390 KB", 380),
-      lista_registro: todo("Registro_San_Pablo_Autopan.csv", "54 KB", 60),
       confirmacion_enlace: todo("Confirmacion_transporte_Toluca.pdf", "180 KB", 50),
       fotos_espacio: todo("Fotos_CDC_San_Pablo.zip", "11 MB", 120),
       resguardo_nocturno: todo("Oficio_resguardo_nocturno_Seguridad_Publica.pdf", "300 KB", 200),
@@ -236,7 +229,7 @@ export function crearSeed(): BaseDatos {
     creadaHaceHoras: 52,
     servicios: ["Mastografía (40–69 años)", "Papanicolaou (25 años o más)", "Plática de autoexploración"],
     modulos: ["comunidad_indigena"],
-    metaPacientes: 150,
+    estimadoPersonas: "100_200",
     enlaceEira: ANDREA,
     enlaceMunicipal: {
       nombre: "Mtra. Itzel Tecuatl Xicoténcatl",
@@ -247,10 +240,6 @@ export function crearSeed(): BaseDatos {
       medioPreferido: "correo",
     },
     historia: {
-      logotipos: [
-        { t: "subida", archivo: "Escudo_San_Pedro_Cholula.png", tamano: "1.2 MB", por: cho, hace: 40 },
-        { t: "aprobado", por: ANDREA.nombre, hace: 36 },
-      ],
       ficha_condiciones: [
         { t: "subida", archivo: "Ficha_condiciones_Zacapechpan.pdf", tamano: "350 KB", por: cho, hace: 30 },
         { t: "aprobado", por: ANDREA.nombre, hace: 26 },
@@ -263,6 +252,7 @@ export function crearSeed(): BaseDatos {
   });
 
   return {
+    esquema: ESQUEMA,
     version: 1,
     actualizadoEn: new Date().toISOString(),
     jornadas: [naucalpan, toluca, sanPedro],

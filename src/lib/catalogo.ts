@@ -1,4 +1,4 @@
-import type { GrupoRequisito, ModuloClave } from "./types";
+import type { GrupoRequisito, ModuloClave, RangoPersonas } from "./types";
 
 // Catálogo de requisitos (Plantilla base de jornada EIRA).
 // Las fechas límite se calculan hacia atrás desde el día de la jornada (D).
@@ -25,7 +25,7 @@ export const GRUPOS: Record<GrupoRequisito, { titulo: string; descripcion: strin
   },
   identidad: {
     titulo: "Identidad y convocatoria",
-    descripcion: "Imagen institucional, registro de pacientes y datos de contacto.",
+    descripcion: "Datos de contacto, información operativa y sociocultural, y convocatoria de pacientes.",
   },
   evidencia: {
     titulo: "Evidencia del espacio",
@@ -87,37 +87,14 @@ export const REQUISITOS_BASE: DefinicionRequisito[] = [
     opcional: false,
   },
   {
-    clave: "logotipos",
-    nombre: "Logotipos oficiales (Ayuntamiento y DIF)",
-    descripcion: "Escudo del Ayuntamiento y logotipo del DIF municipal para el material de difusión.",
-    grupo: "identidad",
-    criterio: "PNG con fondo transparente, SVG o AI. No se aceptan capturas de pantalla ni imágenes borrosas.",
-    formatos: "PNG transparente, SVG o AI",
-    diasAntes: 15,
-    critico: false,
-    opcional: false,
-  },
-  {
     clave: "ficha_condiciones",
     nombre: "Ficha de condiciones del lugar, comunidad e idioma",
     descripcion:
-      "Cuestionario sobre electricidad, internet, privacidad, baños, mobiliario, lengua, horarios y transporte.",
+      "Cuestionario sobre electricidad, internet, privacidad, baños, mobiliario, lengua, horarios, transporte y permisos de la comunidad.",
     grupo: "identidad",
     criterio: "Cuestionario completo con todas las secciones respondidas y comentarios donde aplique.",
     formatos: "Formulario en línea",
     diasAntes: 15,
-    critico: false,
-    opcional: false,
-  },
-  {
-    clave: "lista_registro",
-    nombre: "Lista preliminar de personas registradas",
-    descripcion:
-      "Ayuda a organizar horarios y transporte. Referencia: mastografía 40–69 años; exploración o Papanicolaou 25 años o más.",
-    grupo: "identidad",
-    criterio: "Archivo CSV o Excel con columnas: nombre, edad, teléfono y comunidad de origen.",
-    formatos: "CSV o XLSX",
-    diasAntes: 5,
     critico: false,
     opcional: false,
   },
@@ -226,6 +203,20 @@ export const SERVICIOS_EIRA = [
   "Plática de autoexploración",
   "Prueba de VPH",
 ];
+
+export const RANGOS_PERSONAS: { clave: RangoPersonas; texto: string }[] = [
+  { clave: "menos_50", texto: "Menos de 50" },
+  { clave: "50_100", texto: "De 50 a 100" },
+  { clave: "100_200", texto: "De 100 a 200" },
+  { clave: "mas_200", texto: "Más de 200" },
+];
+
+export const TEXTO_RANGO: Record<RangoPersonas, string> = Object.fromEntries(
+  RANGOS_PERSONAS.map((r) => [r.clave, r.texto]),
+) as Record<RangoPersonas, string>;
+
+export const REFERENCIA_EDADES =
+  "Mastografía para mujeres de 40 a 69 años; exploración clínica o Papanicolaou para mujeres de 25 años o más.";
 
 export const NOMBRE_MODULO: Record<ModuloClave, string> = {
   unidad_movil: "Unidad móvil",

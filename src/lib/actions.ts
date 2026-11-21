@@ -4,8 +4,8 @@ import { revalidatePath } from "next/cache";
 import { mutarDB, reiniciarDB } from "./db";
 import { fechaLimiteDesde, fechaMx } from "./fechas";
 import { construirRequisitos, nuevoId } from "./logica";
-import { PLANTILLA_BASE } from "./catalogo";
-import type { Jornada, MedioContacto, ModuloClave } from "./types";
+import { PLANTILLA_BASE, RANGOS_PERSONAS, TEXTO_RANGO } from "./catalogo";
+import type { Jornada, MedioContacto, ModuloClave, RangoPersonas } from "./types";
 
 function revalidarTodo() {
   revalidatePath("/", "layout");
@@ -141,6 +141,35 @@ export async function pedirAyuda(input: { jornadaId: string; requisitoId?: strin
   }
 }
 
+/** Municipio: modifica el estimado de personas hasta 5 días antes de la visita; se notifica a EIRA. */
+export async function actualizarEstimado(input: { jornadaId: string; estimado: RangoPersonas }): Promise<Resultado> {
+  if (!RANGOS_PERSONAS.some((r) => r.clave === input.estimado)) return { ok: false, error: "Opción no válida." };
+  try {
+    mutarDB((db) => {
+      const j = db.jornadas.find((x) => x.id === input.jornadaId);
+      if (!j) throw new Error("Jornada no encontrada.");
+      if (Date.now() > new Date(fechaLimiteDesde(j.fecha, 5)).getTime()) {
+        throw new Error("Ya pasó el plazo para modificar el estimado (hasta 5 días antes de la visita).");
+      }
+      if (j.estimadoPersonas === input.estimado) return;
+      const anterior = j.estimadoPersonas;
+      j.estimadoPersonas = input.estimado;
+      j.mensajes.unshift({
+        id: nuevoId("msg"),
+        tipo: "cambio_estimado",
+        autor: j.enlaceMunicipal.nombre,
+        fecha: new Date().toISOString(),
+        mensaje: `Cambió el estimado de personas a atender: de "${TEXTO_RANGO[anterior]}" a "${TEXTO_RANGO[input.estimado]}".`,
+        atendido: false,
+      });
+    });
+    revalidarTodo();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : "Error" };
+  }
+}
+
 export async function marcarAtendido(input: { jornadaId: string; mensajeId: string }): Promise<Resultado> {
   mutarDB((db) => {
     const m = db.jornadas.find((x) => x.id === input.jornadaId)?.mensajes.find((x) => x.id === input.mensajeId);
@@ -168,7 +197,7 @@ export interface NuevaJornadaInput {
   fecha: string; // YYYY-MM-DD
   servicios: string[];
   modulos: ModuloClave[];
-  metaPacientes: number;
+  estimadoPersonas: RangoPersonas;
   enlaceNombre: string;
   enlaceCargo: string;
   enlaceCorreo: string;
@@ -221,7 +250,7 @@ export async function crearJornada(
         whatsapp: input.enlaceWhatsapp.trim() || input.enlaceCelular.trim(),
         medioPreferido: input.medioPreferido,
       },
-      metaPacientes: input.metaPacientes || 0,
+      estimadoPersonas: input.estimadoPersonas,
       creadaEn,
       requisitos: construirRequisitos(fecha, input.modulos, creadaEn),
       mensajes: [],

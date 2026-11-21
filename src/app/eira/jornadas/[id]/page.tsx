@@ -1,15 +1,12 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
-  AlertTriangle,
   CalendarClock,
   CalendarDays,
   ChevronRight,
-  ClipboardList,
   ExternalLink,
   Mail,
   MapPin,
-  Megaphone,
   MessageCircle,
   Phone,
   ShieldCheck,
@@ -17,7 +14,7 @@ import {
   Stethoscope,
 } from "lucide-react";
 import { BarraProgreso, ChipModulo, SemaforoBadge } from "@/components/Insignias";
-import { GRUPOS, NOMBRE_MODULO } from "@/lib/catalogo";
+import { GRUPOS, NOMBRE_MODULO, TEXTO_RANGO } from "@/lib/catalogo";
 import { jornadaPorId } from "@/lib/db";
 import { formatoFecha, formatoFechaHora, horasRestantes, textoFaltanDias, textoVencimiento } from "@/lib/fechas";
 import { conteo, diagnostico, progreso, resumenAvance } from "@/lib/logica";
@@ -27,23 +24,10 @@ import { RevisionRequisito } from "./RevisionRequisito";
 
 export const dynamic = "force-dynamic";
 
-const PESTANAS = [
-  { clave: "expediente", texto: "Expediente y checklist", icono: ClipboardList },
-  { clave: "condiciones", texto: "Condiciones y alertas", icono: AlertTriangle },
-  { clave: "difusion", texto: "Kit de difusión", icono: Megaphone },
-] as const;
-
 const MEDIO = { whatsapp: "WhatsApp", correo: "Correo electrónico", llamada: "Llamada" };
 
-export default async function Expediente({
-  params,
-  searchParams,
-}: {
-  params: Promise<{ id: string }>;
-  searchParams: Promise<{ tab?: string }>;
-}) {
+export default async function Expediente({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const { tab = "expediente" } = await searchParams;
   const j = jornadaPorId(id);
   if (!j) notFound();
 
@@ -105,26 +89,6 @@ export default async function Expediente({
         </div>
       </section>
 
-      {/* Pestañas */}
-      <div className="flex gap-1 overflow-x-auto rounded-2xl bg-slate-100/70 p-1">
-        {PESTANAS.map((t) => {
-          const activa = tab === t.clave;
-          return (
-            <Link
-              key={t.clave}
-              href={t.clave === "expediente" ? `/eira/jornadas/${j.id}` : `/eira/jornadas/${j.id}?tab=${t.clave}`}
-              className={`flex shrink-0 items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition ${
-                activa ? "bg-white text-pizarra shadow-sm" : "text-pizarra-suave hover:text-pizarra"
-              }`}
-            >
-              <t.icono className={`h-4 w-4 ${activa ? "text-rosa" : ""}`} /> {t.texto}
-              {t.clave !== "expediente" && <span className="rounded-full bg-slate-200/80 px-1.5 text-[10px] text-slate-500">Fase 2</span>}
-            </Link>
-          );
-        })}
-      </div>
-
-      {tab === "expediente" ? (
         <div className="grid gap-6 xl:grid-cols-[1fr_320px]">
           <div className="min-w-0 space-y-8">
             {grupos.map(({ g, reqs }) =>
@@ -158,7 +122,7 @@ export default async function Expediente({
 
           <aside className="space-y-4">
             <div className="tarjeta p-5">
-              <h2 className="flex items-center gap-2 text-base font-bold"><MessageCircle className="h-4 w-4 text-rosa" /> Preguntas del municipio</h2>
+              <h2 className="flex items-center gap-2 text-base font-bold"><MessageCircle className="h-4 w-4 text-rosa" /> Avisos y preguntas del municipio</h2>
               <div className="mt-3 space-y-2">
                 {mensajes.length === 0 && <p className="rounded-2xl bg-slate-50 p-3 text-center text-sm text-pizarra-suave">Sin preguntas.</p>}
                 {mensajes.map((m) => {
@@ -168,6 +132,7 @@ export default async function Expediente({
                       <p className="text-[11px] font-semibold text-pizarra-suave">
                         {m.autor} · {formatoFechaHora(m.fecha)}
                       </p>
+                      {m.tipo === "cambio_estimado" && <p className="mt-0.5 text-[11px] font-bold uppercase tracking-wide text-guinda">Cambio de estimado</p>}
                       {req && <p className="mt-0.5 text-[11px] font-semibold text-rosa-700">Sobre: {req.nombre}</p>}
                       <p className="mt-1 text-sm">{m.mensaje}</p>
                       {!m.atendido ? <BotonAtendido jornadaId={j.id} mensajeId={m.id} /> : <p className="mt-1 text-[11px] font-semibold text-estado-aprobado">Atendida</p>}
@@ -205,13 +170,10 @@ export default async function Expediente({
                 {j.modulos.length === 0 && <span className="text-xs text-pizarra-suave">Sin módulos adicionales</span>}
                 {j.modulos.map((m) => <ChipModulo key={m} tono="dorado">{NOMBRE_MODULO[m]}</ChipModulo>)}
               </div>
-              <p className="mt-3 text-xs text-pizarra-suave">{j.plantilla} · Meta: {j.metaPacientes} mujeres</p>
+              <p className="mt-3 text-xs text-pizarra-suave">{j.plantilla} · Personas estimadas: {TEXTO_RANGO[j.estimadoPersonas]}</p>
             </div>
           </aside>
         </div>
-      ) : (
-        <Placeholder tab={tab} />
-      )}
     </div>
   );
 }
@@ -224,38 +186,6 @@ function Dato({ icono: Icono, titulo, valor, pie }: { icono: typeof MapPin; titu
       </p>
       <p className="mt-1 font-semibold leading-snug">{valor}</p>
       <p className="text-xs text-pizarra-suave">{pie}</p>
-    </div>
-  );
-}
-
-function Placeholder({ tab }: { tab: string }) {
-  const info =
-    tab === "condiciones"
-      ? {
-          icono: AlertTriangle,
-          titulo: "Condiciones y alertas",
-          texto:
-            "Aquí aparecerán las necesidades detectadas a partir de la ficha de campo: planta o regulador eléctrico, operación sin conexión, traductora, transporte comunitario, resguardo nocturno y riesgos por clima o caminos.",
-          items: ["Planta / regulador eléctrico", "Modo sin conexión", "Traductora bilingüe", "Transporte comunitario", "Caminos 4×4"],
-        }
-      : {
-          icono: Megaphone,
-          titulo: "Kit de difusión",
-          texto:
-            "Cuando EIRA apruebe los logotipos municipales, aquí se generará automáticamente el volante con la identidad de ambas instituciones y el mensaje listo para WhatsApp.",
-          items: ["Volante con logotipos", "Mensaje para WhatsApp", "Cartel para redes", "Perifoneo"],
-        };
-  return (
-    <div className="tarjeta fondo-puntos grid place-items-center px-6 py-16 text-center">
-      <span className="grid h-16 w-16 place-items-center rounded-2xl bg-rosa-degradado text-white shadow-flotante">
-        <info.icono className="h-7 w-7" />
-      </span>
-      <h2 className="mt-5 text-2xl font-bold">{info.titulo}</h2>
-      <p className="mt-2 max-w-xl text-pizarra-suave">{info.texto}</p>
-      <div className="mt-5 flex flex-wrap justify-center gap-2">
-        {info.items.map((i) => <ChipModulo key={i} tono="gris">{i}</ChipModulo>)}
-      </div>
-      <span className="mt-6 rounded-full bg-crema px-4 py-1.5 text-xs font-semibold text-rosa-700">Disponible en la Fase 2</span>
     </div>
   );
 }
