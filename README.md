@@ -2,6 +2,8 @@
 
 Plataforma web de **EIRA Movimiento Rosa A.C.** para coordinar jornadas de detección oportuna de cáncer de mama y cervicouterino con gobiernos municipales. Cada municipio sabe qué entregar, cómo y para cuándo, y EIRA detecta riesgos antes de movilizar al equipo.
 
+**Prueba la demo en línea:** https://enlace-rosa.vercel.app/
+
 > Estado: demo funcional. Los datos de ejemplo (Naucalpan, Toluca y San Pedro Cholula) se cargan solos.
 
 ## Tabla de contenidos
@@ -35,10 +37,13 @@ Funciones principales:
 - **Revisión de documentos**: EIRA aprueba u observa cada versión, con motivo obligatorio al observar. Todo queda en un historial.
 - **Carta compromiso** que el municipio llena, firma con el mouse y envía; se descarga como PDF de una hoja.
 - **Ficha del lugar y la comunidad** con lógica condicional que activa requisitos y alertas.
+- **Formulario de evidencia del espacio** (electricidad, privacidad y acceso) que decide si subir las 3 fotografías es obligatorio u opcional.
 - **Estimado de personas a atender**, modificable hasta 5 días antes de la visita, con aviso a EIRA.
 - **Dudas del municipio** hacia EIRA, con bandeja propia.
 
 ## Accesos de demostración
+
+Prueba la plataforma en https://enlace-rosa.vercel.app/ con los siguientes accesos:
 
 **Enlace Municipal** (en `/gob`, solo se escribe el ID):
 
@@ -86,8 +91,9 @@ Son credenciales de respaldo para la demo. En producción cámbialas con las [va
    - Firma con el mouse o el dedo y pulsa "Firmar y enviar a EIRA".
    - "Descargar PDF" baja la última versión guardada. También puedes firmarla y sellarla a mano y subir el escaneo.
    - Si cambias los datos después de firmar, la firma se invalida y debes firmar de nuevo.
-7. **Ficha del lugar y la comunidad** (`/gob/[ID]/ficha-campo`): responde instalaciones y comunidad. Antes de enviar, la pantalla te avisa qué se activará con tus respuestas.
-8. **"Tengo una duda"**: dentro de cada requisito, escribe tu pregunta; llega al equipo de EIRA.
+7. **Formulario de evidencia del espacio** (`/gob/[ID]/evidencia-espacio`, también desde la columna "Evidencia del espacio"): responde electricidad, privacidad y acceso. Al instante te dice si las fotografías serán obligatorias u opcionales.
+8. **Ficha del lugar y la comunidad** (`/gob/[ID]/ficha-campo`): responde conectividad, baños, mobiliario y comunidad. Antes de enviar, la pantalla te avisa qué se activará con tus respuestas.
+9. **"Tengo una duda"**: dentro de cada requisito, escribe tu pregunta; llega al equipo de EIRA.
 
 ## Reglas de negocio
 
@@ -110,7 +116,7 @@ Son credenciales de respaldo para la demo. En producción cámbialas con las [va
 **Lógica condicional de la ficha de campo** (al enviarla):
 
 1. Si se habla una **lengua indígena**: se activa el requisito de promotora bilingüe o traductora y EIRA recibe una alerta.
-2. Si hay problemas de **electricidad, acceso o privacidad**: las 3 fotografías del lugar pasan a ser obligatorias.
+2. Si en el **formulario de evidencia del espacio** hay problemas de electricidad, acceso o privacidad: las 3 fotografías del lugar pasan a ser obligatorias. Si no hay problemas, siguen siendo opcionales (y vuelven a opcionales si el municipio corrige sus respuestas).
 3. Si **no hay internet ni señal**: EIRA recibe la alerta "Operación en modo sin conexión".
 4. También se generan alertas por planta eléctrica requerida, transporte comunitario, acceso 4×4, resguardo nocturno, personal femenino, falta de baños o agua y espacio sin techo.
 

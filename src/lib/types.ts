@@ -112,6 +112,8 @@ export interface FichaCampo {
   transporteDetalle: string;
   resguardoNocturno: SiNo;
   resguardoDetalle: string;
+  generalEn?: string;
+  evidenciaEn?: string;
   actualizadoEn: string;
 }
 

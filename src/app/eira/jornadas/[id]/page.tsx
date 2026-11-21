@@ -22,6 +22,7 @@ import { BarraProgreso, ChipModulo, SemaforoBadge } from "@/components/Insignias
 import { GRUPOS, NOMBRE_MODULO, TEXTO_RANGO } from "@/lib/catalogo";
 import { jornadaPorId } from "@/lib/db";
 import { formatoFecha, formatoFechaHora, jornadaCompletada, horasRestantes, textoFaltanDias, textoVencimiento } from "@/lib/fechas";
+import { partesFicha } from "@/lib/ficha";
 import { conteo, diagnostico, progreso, resumenAvance } from "@/lib/logica";
 import type { GrupoRequisito } from "@/lib/types";
 import { BotonAtendido, CopiarEnlace, CopiarTexto } from "./Acciones";
@@ -255,38 +256,42 @@ const ETIQUETA_INTERNET = { wifi: "Wi-Fi", telcel: "Telcel", altan_cfe: "Altán 
 
 function Condiciones({ j }: { j: NonNullable<Awaited<ReturnType<typeof jornadaPorId>>> }) {
   const f = j.ficha;
+  const partes = partesFicha(f);
   if (!f) {
     return (
       <div className="tarjeta grid place-items-center px-6 py-14 text-center">
         <span className="grid h-14 w-14 place-items-center rounded-full bg-rosa-50 text-rosa-600"><AlertTriangle className="h-6 w-6" /></span>
-        <h2 className="mt-4 font-serif text-2xl font-normal">Aún no hay ficha de campo</h2>
+        <h2 className="mt-4 font-serif text-2xl font-normal">Aún no hay formularios respondidos</h2>
         <p className="mt-1 max-w-md text-sm text-pizarra-suave">
-          Cuando {j.municipio} envíe la ficha del lugar y la comunidad, aquí aparecerán las alertas operativas generadas automáticamente.
+          Cuando {j.municipio} envíe la ficha del lugar y el formulario de evidencia del espacio, aquí aparecerán las alertas operativas generadas automáticamente.
         </p>
       </div>
     );
   }
   const si = (v: string) => (v === "si" ? "Sí" : "No");
+  const SIN = "Sin responder";
+  const ev = (v: string) => (partes.evidencia ? v : SIN);
+  const ge = (v: string) => (partes.general ? v : SIN);
   const filas: [string, string][] = [
-    ["Toma eléctrica a < 20 m", si(f.tomaMenos20m)],
-    ["Voltaje estable", si(f.voltajeEstable)],
-    ["Apagones", { nunca: "Nunca", ocasionales: "Ocasionales", frecuentes: "Frecuentes" }[f.apagones]],
-    ["Planta de respaldo", si(f.plantaRespaldo)],
-    ["Internet / señal", f.internet.map((x) => ETIQUETA_INTERNET[x]).join(", ")],
-    ["Espacio privado", si(f.espacioPrivado)],
-    ["Techado", si(f.espacioTechado)],
-    ["Baños / agua", `${si(f.banos)} / ${si(f.aguaDisponible)}`],
-    ["Mesas y sillas", si(f.mesasSillas)],
-    ["Lengua indígena", f.hablaLenguaIndigena === "si" ? [f.lengua, f.variante].filter(Boolean).join(" · ") || "Sí" : "No"],
-    ["Días/horarios locales", f.diasHorariosLocales || "—"],
-    ["Acceso", `${f.accesoVehicular === "dificil" ? "Difícil" : "Fácil"}${f.caminos4x4 === "si" ? " · 4×4" : ""}`],
+    ["Toma eléctrica a < 20 m", ev(si(f.tomaMenos20m))],
+    ["Voltaje estable", ev(si(f.voltajeEstable))],
+    ["Apagones", ev({ nunca: "Nunca", ocasionales: "Ocasionales", frecuentes: "Frecuentes" }[f.apagones])],
+    ["Planta de respaldo", ev(si(f.plantaRespaldo))],
+    ["Internet / señal", ge(f.internet.map((x) => ETIQUETA_INTERNET[x]).join(", "))],
+    ["Espacio privado", ev(si(f.espacioPrivado))],
+    ["Techado", ev(si(f.espacioTechado))],
+    ["Baños / agua", ge(`${si(f.banos)} / ${si(f.aguaDisponible)}`)],
+    ["Mesas y sillas", ge(si(f.mesasSillas))],
+    ["Lengua indígena", ge(f.hablaLenguaIndigena === "si" ? [f.lengua, f.variante].filter(Boolean).join(" · ") || "Sí" : "No")],
+    ["Días/horarios locales", ge(f.diasHorariosLocales || "—")],
+    ["Acceso", ev(`${f.accesoVehicular === "dificil" ? "Difícil" : "Fácil"}${f.caminos4x4 === "si" ? " · 4×4" : ""}`)],
   ];
   return (
     <div className="grid gap-6 xl:grid-cols-[1fr_340px]">
       <section className="min-w-0 space-y-3">
         <div className="flex items-end justify-between">
           <h2 className="text-lg font-bold">Alertas operativas ({j.alertas.length})</h2>
-          <span className="text-xs text-pizarra-suave">Ficha enviada {formatoFechaHora(f.actualizadoEn)}</span>
+          <span className="text-xs text-pizarra-suave">Actualizado {formatoFechaHora(f.actualizadoEn)}</span>
         </div>
         {j.alertas.length === 0 && <p className="tarjeta p-6 text-center text-sm text-pizarra-suave">Sin alertas: las condiciones reportadas son adecuadas.</p>}
         <div className="grid gap-3 md:grid-cols-2">

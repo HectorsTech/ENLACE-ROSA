@@ -4,10 +4,10 @@ import { revalidatePath } from "next/cache";
 import { mutarDB, reiniciarDB } from "./db";
 import { fechaLimiteDesde, fechaMx } from "./fechas";
 import { construirRequisitos, nuevoId, requisitoDesdeDefinicion } from "./logica";
-import { evaluarFicha } from "./ficha";
+import { CAMPOS_EVIDENCIA, CAMPOS_GENERAL, evaluarFicha, FICHA_VACIA, partesFicha, tomar, type DatosEvidencia, type DatosGeneral } from "./ficha";
 import { exigirEira } from "./auth-actions";
 import { MODULOS, PLANTILLA_BASE, RANGOS_PERSONAS, TEXTO_RANGO } from "./catalogo";
-import type { CartaDatos, FichaCampo, Jornada, MedioContacto, ModuloClave, RangoPersonas } from "./types";
+import type { CartaDatos, Jornada, MedioContacto, ModuloClave, RangoPersonas } from "./types";
 
 function revalidarTodo() {
   revalidatePath("/", "layout");
@@ -247,10 +247,56 @@ export async function firmarCarta(input: { jornadaId: string; datos: DatosCartaI
   }
 }
 
-/** Municipio: guarda la ficha de campo y aplica la lógica condicional (requisitos y alertas). */
+const sistemaEv = (fecha: string, detalle: string) => ({ id: nuevoId("ev"), tipo: "creado" as const, actor: "Sistema Enlace Rosa", rol: "sistema" as const, fecha, detalle });
+
+/** Aplica la lógica condicional sobre requisitos y alertas según los formularios respondidos. */
+function aplicarEfectosFicha(j: Jornada, ahora: string): string[] {
+  const ficha = j.ficha!;
+  const partes = partesFicha(ficha);
+  const ev = evaluarFicha(ficha);
+  const efectos: string[] = [];
+
+  if (partes.general && ev.pedirTraductora && !j.requisitos.some((r) => r.clave === "traductora")) {
+    const def = MODULOS.find((m) => m.clave === "comunidad_indigena")!;
+    for (const d of def.requisitos) {
+      j.requisitos.push(requisitoDesdeDefinicion(d, j.fecha, ahora, "Activado automáticamente: la ficha de campo indica que se habla una lengua indígena."));
+    }
+    if (!j.modulos.includes("comunidad_indigena")) j.modulos.push("comunidad_indigena");
+    efectos.push("Se activó el requisito de registrar a la promotora bilingüe o traductora.");
+  }
+
+  const fotos = j.requisitos.find((r) => r.clave === "fotos_espacio");
+  if (partes.evidencia && fotos && fotos.estado !== "aprobado") {
+    if (ev.pedirFotos && fotos.opcional) {
+      fotos.opcional = false;
+      fotos.critico = true;
+      fotos.descripcion = "Obligatorias: el formulario de evidencia indica problemas de electricidad, acceso o privacidad. Sube 3 fotografías claras del lugar.";
+      fotos.historial.push(sistemaEv(ahora, "Pasó a obligatorio por problemas de electricidad, acceso o privacidad reportados en el formulario de evidencia."));
+      efectos.push("Subir las 3 fotografías del espacio ahora es OBLIGATORIO.");
+    } else if (!ev.pedirFotos && !fotos.opcional) {
+      fotos.opcional = true;
+      fotos.critico = false;
+      fotos.descripcion = "Opcionales, pero muy sugeridas si el formulario de evidencia no refleja condiciones satisfactorias para un tamizaje seguro.";
+      fotos.historial.push(sistemaEv(ahora, "Volvió a opcional: el formulario de evidencia no reporta problemas."));
+      efectos.push("Subir las fotografías del espacio es OPCIONAL.");
+    } else {
+      efectos.push(ev.pedirFotos ? "Subir las 3 fotografías del espacio es OBLIGATORIO." : "Subir las fotografías del espacio es OPCIONAL.");
+    }
+  }
+
+  const previas = new Map(j.alertas.map((al) => [al.clave, al.fecha]));
+  j.alertas = ev.alertas
+    .filter((al) => partes[al.origen])
+    .map((al) => ({ id: nuevoId("al"), ...al, fecha: previas.get(al.clave) ?? ahora }));
+  const nuevas = j.alertas.filter((al) => !previas.has(al.clave));
+  if (nuevas.length) efectos.push(`Se avisó a EIRA de ${nuevas.length} alerta(s) operativa(s).`);
+  return efectos;
+}
+
+/** Municipio: guarda la ficha de campo (comunidad, conectividad, baños y mobiliario). */
 export async function guardarFicha(input: {
   jornadaId: string;
-  ficha: Omit<FichaCampo, "actualizadoEn">;
+  ficha: DatosGeneral;
 }): Promise<{ ok: true; efectos: string[] } | { ok: false; error: string }> {
   const f = input.ficha;
   if (f.internet.length === 0) return { ok: false, error: "Indica qué señal o internet hay en el lugar (o elige \"Ninguna\")." };
@@ -259,35 +305,17 @@ export async function guardarFicha(input: {
       const j = db.jornadas.find((x) => x.id === input.jornadaId);
       if (!j) throw new Error("Jornada no encontrada.");
       const ahora = new Date().toISOString();
-      const efectos: string[] = [];
-      j.ficha = { ...f, internet: f.internet.includes("ninguna") ? ["ninguna"] : f.internet, actualizadoEn: ahora };
-      const ev = evaluarFicha(j.ficha);
-
-      const sistema = (detalle: string) => ({ id: nuevoId("ev"), tipo: "creado" as const, actor: "Sistema Enlace Rosa", rol: "sistema" as const, fecha: ahora, detalle });
-
-      if (ev.pedirTraductora && !j.requisitos.some((r) => r.clave === "traductora")) {
-        const def = MODULOS.find((m) => m.clave === "comunidad_indigena")!;
-        for (const d of def.requisitos) {
-          j.requisitos.push(requisitoDesdeDefinicion(d, j.fecha, ahora, "Activado automáticamente: la ficha de campo indica que se habla una lengua indígena."));
-        }
-        if (!j.modulos.includes("comunidad_indigena")) j.modulos.push("comunidad_indigena");
-        efectos.push("Se activó el requisito de registrar a la promotora bilingüe o traductora.");
-      }
-
-      const fotos = j.requisitos.find((r) => r.clave === "fotos_espacio");
-      if (ev.pedirFotos && fotos && fotos.opcional && fotos.estado !== "aprobado") {
-        fotos.opcional = false;
-        fotos.critico = true;
-        fotos.descripcion =
-          "Obligatorias: la ficha de campo indica problemas de electricidad, acceso o privacidad. Sube 3 fotografías claras del lugar.";
-        fotos.historial.push(sistema("Pasó a obligatorio por problemas de electricidad, acceso o privacidad reportados en la ficha."));
-        efectos.push("Se activó como obligatorio subir 3 fotografías claras del lugar.");
-      }
-
-      const previas = new Map(j.alertas.map((a) => [a.clave, a.fecha]));
-      j.alertas = ev.alertas.map((a) => ({ id: nuevoId("al"), ...a, fecha: previas.get(a.clave) ?? ahora }));
-      const nuevas = j.alertas.filter((a) => !previas.has(a.clave));
-      if (nuevas.length) efectos.push(`Se avisó a EIRA de ${nuevas.length} alerta(s) operativa(s).`);
+      const base = j.ficha ?? { ...FICHA_VACIA, actualizadoEn: ahora };
+      const antigua = !base.generalEn && !base.evidenciaEn && !!j.ficha;
+      j.ficha = {
+        ...base,
+        ...tomar({ ...FICHA_VACIA, ...f }, CAMPOS_GENERAL),
+        internet: f.internet.includes("ninguna") ? ["ninguna"] : f.internet,
+        generalEn: ahora,
+        evidenciaEn: antigua ? base.actualizadoEn : base.evidenciaEn,
+        actualizadoEn: ahora,
+      };
+      const efectos = aplicarEfectosFicha(j, ahora);
 
       const req = j.requisitos.find((r) => r.clave === "ficha_condiciones");
       if (req && req.estado !== "aprobado") {
@@ -299,6 +327,34 @@ export async function guardarFicha(input: {
         req.historial.push({ id: nuevoId("ev"), tipo: "subida", actor: autor, rol: "municipio", fecha: ahora, version: numero, detalle: `Envió la ficha de campo (v${numero}).` });
       }
       return efectos;
+    });
+    revalidarTodo();
+    return { ok: true, efectos };
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : "Error" };
+  }
+}
+
+/** Municipio: formulario de evidencia del espacio; decide si las fotografías son obligatorias u opcionales. */
+export async function guardarEvidencia(input: {
+  jornadaId: string;
+  datos: DatosEvidencia;
+}): Promise<{ ok: true; efectos: string[] } | { ok: false; error: string }> {
+  try {
+    const efectos = await mutarDB((db) => {
+      const j = db.jornadas.find((x) => x.id === input.jornadaId);
+      if (!j) throw new Error("Jornada no encontrada.");
+      const ahora = new Date().toISOString();
+      const base = j.ficha ?? { ...FICHA_VACIA, actualizadoEn: ahora };
+      const antigua = !base.generalEn && !base.evidenciaEn && !!j.ficha;
+      j.ficha = {
+        ...base,
+        ...tomar({ ...FICHA_VACIA, ...input.datos }, CAMPOS_EVIDENCIA),
+        generalEn: antigua ? base.actualizadoEn : base.generalEn,
+        evidenciaEn: ahora,
+        actualizadoEn: ahora,
+      };
+      return aplicarEfectosFicha(j, ahora);
     });
     revalidarTodo();
     return { ok: true, efectos };

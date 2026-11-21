@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { CalendarDays, ChevronRight, MapPin, UserRound } from "lucide-react";
+import { CalendarDays, ChevronRight, ClipboardList, MapPin, UserRound } from "lucide-react";
+import { partesFicha } from "@/lib/ficha";
 import { BarraProgreso } from "@/components/Insignias";
 import { GRUPOS } from "@/lib/catalogo";
 import { jornadaPorToken } from "@/lib/db";
@@ -15,6 +16,7 @@ export const dynamic = "force-dynamic";
 const ENLACES: Record<string, (token: string) => { href: string; texto: string }> = {
   carta_compromiso: (t) => ({ href: `/gob/${t}/carta`, texto: "Generar carta compromiso" }),
   ficha_condiciones: (t) => ({ href: `/gob/${t}/ficha-campo`, texto: "Llenar ficha" }),
+  fotos_espacio: (t) => ({ href: `/gob/${t}/evidencia-espacio`, texto: "Llenar formulario del espacio" }),
 };
 
 export default async function PortalMunicipal({ params }: { params: Promise<{ token: string }> }) {
@@ -24,6 +26,7 @@ export default async function PortalMunicipal({ params }: { params: Promise<{ to
 
   const ahora = Date.now();
   const p = progreso(j);
+  const fotosObligatorias = j.requisitos.some((r) => r.clave === "fotos_espacio" && !r.opcional);
   const grupos = (Object.keys(GRUPOS) as GrupoRequisito[]).map((g) => ({
     g,
     reqs: j.requisitos.filter((r) => r.grupo === g).sort((a, b) => b.diasAntes - a.diasAntes),
@@ -74,6 +77,23 @@ export default async function PortalMunicipal({ params }: { params: Promise<{ to
               </div>
               <p className="mt-1 text-xs text-pizarra-suave">{GRUPOS[g].descripcion}</p>
             </div>
+            {g === "evidencia" && (
+              <Link
+                href={`/gob/${j.token}/evidencia-espacio`}
+                className="mb-3 flex items-center gap-3 rounded-2xl border-[1.5px] border-rosa bg-white p-4 shadow-suave transition hover:-translate-y-0.5"
+              >
+                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-rosa-50 text-rosa-600"><ClipboardList className="h-5 w-5" /></span>
+                <span className="min-w-0 flex-1">
+                  <span className="block text-sm font-semibold leading-snug">Formulario de evidencia del espacio</span>
+                  <span className="block text-xs text-pizarra-suave">
+                    {partesFicha(j.ficha).evidencia && j.ficha
+                      ? `Respondido · fotos ${fotosObligatorias ? "obligatorias" : "opcionales"}`
+                      : "Pendiente · define si las fotos son obligatorias"}
+                  </span>
+                </span>
+                <ChevronRight className="h-4 w-4 shrink-0 text-pizarra-suave" />
+              </Link>
+            )}
             <div className="space-y-2.5">
               {reqs.map((r) => (
                 <TarjetaRequisito

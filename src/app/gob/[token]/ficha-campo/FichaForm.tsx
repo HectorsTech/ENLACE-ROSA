@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useMemo, useState, useTransition } from "react";
 import { AlertTriangle, CheckCircle2, Loader2, Send } from "lucide-react";
 import { guardarFicha } from "@/lib/actions";
-import { evaluarFicha, type FICHA_VACIA } from "@/lib/ficha";
+import { CAMPOS_GENERAL, evaluarFicha, tomar, type FICHA_VACIA } from "@/lib/ficha";
 import type { SenalInternet, SiNo } from "@/lib/types";
 
 type Datos = typeof FICHA_VACIA;
@@ -23,6 +23,7 @@ export function FichaForm({ jornadaId, inicial, enviada }: { jornadaId: string; 
   const [res, setRes] = useState<{ ok: boolean; texto: string; efectos?: string[] } | null>(null);
   const set = <K extends keyof Datos>(k: K, v: Datos[K]) => setF((x) => ({ ...x, [k]: v }));
   const ev = useMemo(() => evaluarFicha(f), [f]);
+  const alertasGeneral = ev.alertas.filter((a) => a.origen === "general");
 
   const alternarSenal = (s: SenalInternet) =>
     set(
@@ -32,28 +33,14 @@ export function FichaForm({ jornadaId, inicial, enviada }: { jornadaId: string; 
 
   const enviar = () =>
     iniciar(async () => {
-      const r = await guardarFicha({ jornadaId, ficha: f });
+      const r = await guardarFicha({ jornadaId, ficha: tomar(f, CAMPOS_GENERAL) });
       setRes(r.ok ? { ok: true, texto: "Ficha enviada a EIRA.", efectos: r.efectos } : { ok: false, texto: r.error });
       router.refresh();
     });
 
   return (
     <div className="space-y-6">
-      <Seccion titulo="Instalaciones" texto="Electricidad, conectividad, privacidad, baños y mobiliario.">
-        <Grupo titulo="Electricidad">
-          <Pregunta t="¿Hay una toma eléctrica a menos de 20 m del área de trabajo?"><SiNoSel v={f.tomaMenos20m} on={(v) => set("tomaMenos20m", v)} /></Pregunta>
-          <Pregunta t="¿El voltaje es estable?"><SiNoSel v={f.voltajeEstable} on={(v) => set("voltajeEstable", v)} /></Pregunta>
-          <Pregunta t="¿Hay apagones en la zona?">
-            <Opciones
-              v={f.apagones}
-              on={(v) => set("apagones", v)}
-              ops={[["nunca", "Nunca"], ["ocasionales", "Ocasionales"], ["frecuentes", "Frecuentes"]]}
-            />
-          </Pregunta>
-          <Pregunta t="¿Existe planta eléctrica de respaldo?"><SiNoSel v={f.plantaRespaldo} on={(v) => set("plantaRespaldo", v)} /></Pregunta>
-          <Comentarios v={f.comentariosElectricidad} on={(v) => set("comentariosElectricidad", v)} />
-        </Grupo>
-
+      <Seccion titulo="Instalaciones" texto="Conectividad, baños, agua y mobiliario. Electricidad, privacidad y acceso se responden en el formulario de evidencia del espacio.">
         <Grupo titulo="Internet y señal">
           <p className="text-xs text-pizarra-suave">Marca todo lo que funcione en el lugar.</p>
           <div className="flex flex-wrap gap-2">
@@ -68,12 +55,6 @@ export function FichaForm({ jornadaId, inicial, enviada }: { jornadaId: string; 
           </div>
         </Grupo>
 
-        <Grupo titulo="Privacidad y clima">
-          <Pregunta t="¿El espacio permite privacidad para los estudios?"><SiNoSel v={f.espacioPrivado} on={(v) => set("espacioPrivado", v)} /></Pregunta>
-          <Pregunta t="¿Está techado o protegido del clima?"><SiNoSel v={f.espacioTechado} on={(v) => set("espacioTechado", v)} /></Pregunta>
-          <Comentarios v={f.comentariosPrivacidad} on={(v) => set("comentariosPrivacidad", v)} />
-        </Grupo>
-
         <Grupo titulo="Baños y agua">
           <Pregunta t="¿Hay baños disponibles?"><SiNoSel v={f.banos} on={(v) => set("banos", v)} /></Pregunta>
           <Pregunta t="¿Hay agua disponible?"><SiNoSel v={f.aguaDisponible} on={(v) => set("aguaDisponible", v)} /></Pregunta>
@@ -85,7 +66,7 @@ export function FichaForm({ jornadaId, inicial, enviada }: { jornadaId: string; 
         </Grupo>
       </Seccion>
 
-      <Seccion titulo="Comunidad" texto="Lengua, costumbres locales, transporte, resguardo y caminos.">
+      <Seccion titulo="Comunidad" texto="Lengua, costumbres locales, transporte y resguardo.">
         <Grupo titulo="Lengua y cultura">
           <Pregunta t="¿Se habla una lengua indígena en la comunidad?"><SiNoSel v={f.hablaLenguaIndigena} on={(v) => set("hablaLenguaIndigena", v)} /></Pregunta>
           {f.hablaLenguaIndigena === "si" && (
@@ -112,25 +93,14 @@ export function FichaForm({ jornadaId, inicial, enviada }: { jornadaId: string; 
           )}
         </Grupo>
 
-        <Grupo titulo="Clima y caminos">
-          <Pregunta t="¿La ruta de acceso es complicada para vehículos grandes?">
-            <Opciones v={f.accesoVehicular} on={(v) => set("accesoVehicular", v)} ops={[["facil", "No, es fácil"], ["dificil", "Sí, es difícil"]]} />
-          </Pregunta>
-          <Pregunta t="¿Se requiere vehículo 4×4 para llegar?"><SiNoSel v={f.caminos4x4} on={(v) => set("caminos4x4", v)} /></Pregunta>
-          <label className="block">
-            <span className="etiqueta">Clima y estado de los caminos</span>
-            <textarea rows={2} className="campo" value={f.climaCaminos} onChange={(e) => set("climaCaminos", e.target.value)} placeholder="Ej. En lluvias el camino de terracería se vuelve intransitable" />
-          </label>
-        </Grupo>
       </Seccion>
 
-      {(ev.pedirTraductora || ev.pedirFotos || ev.alertas.length > 0) && (
+      {(ev.pedirTraductora || alertasGeneral.length > 0) && (
         <section className="rounded-2xl border border-dorado/40 bg-dorado-50 p-5">
           <p className="flex items-center gap-2 font-semibold text-[#8A6A3A]"><AlertTriangle className="h-4 w-4" /> Con estas respuestas, al enviar:</p>
           <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-pizarra">
             {ev.pedirTraductora && <li>Te pediremos registrar a una promotora bilingüe o traductora.</li>}
-            {ev.pedirFotos && <li>Será obligatorio subir 3 fotografías claras (vista general, toma eléctrica y ruta de acceso).</li>}
-            {ev.alertas.map((a) => <li key={a.clave}>EIRA recibirá la alerta: {a.titulo}.</li>)}
+            {alertasGeneral.map((a) => <li key={a.clave}>EIRA recibirá la alerta: {a.titulo}.</li>)}
           </ul>
         </section>
       )}
@@ -154,10 +124,10 @@ export function FichaForm({ jornadaId, inicial, enviada }: { jornadaId: string; 
   );
 }
 
-const chip = (on: boolean) =>
+export const chip = (on: boolean) =>
   `rounded-full border px-4 py-1.5 text-sm font-medium transition ${on ? "border-rosa bg-rosa-50 text-rosa-700" : "border-borde bg-white hover:border-rosa-200"}`;
 
-function Seccion({ titulo, texto, children }: { titulo: string; texto: string; children: React.ReactNode }) {
+export function Seccion({ titulo, texto, children }: { titulo: string; texto: string; children: React.ReactNode }) {
   return (
     <section className="tarjeta space-y-6 p-6">
       <div>
@@ -169,7 +139,7 @@ function Seccion({ titulo, texto, children }: { titulo: string; texto: string; c
   );
 }
 
-function Grupo({ titulo, children }: { titulo: string; children: React.ReactNode }) {
+export function Grupo({ titulo, children }: { titulo: string; children: React.ReactNode }) {
   return (
     <div className="space-y-3 rounded-2xl bg-crema p-4">
       <p className="ojal">{titulo}</p>
@@ -178,7 +148,7 @@ function Grupo({ titulo, children }: { titulo: string; children: React.ReactNode
   );
 }
 
-function Pregunta({ t, children }: { t: string; children: React.ReactNode }) {
+export function Pregunta({ t, children }: { t: string; children: React.ReactNode }) {
   return (
     <div className="flex flex-wrap items-center justify-between gap-2">
       <p className="text-sm">{t}</p>
@@ -187,7 +157,7 @@ function Pregunta({ t, children }: { t: string; children: React.ReactNode }) {
   );
 }
 
-function Opciones<T extends string>({ v, on, ops }: { v: T; on: (v: T) => void; ops: [T, string][] }) {
+export function Opciones<T extends string>({ v, on, ops }: { v: T; on: (v: T) => void; ops: [T, string][] }) {
   return (
     <div className="flex gap-1.5">
       {ops.map(([k, t]) => (
@@ -199,8 +169,8 @@ function Opciones<T extends string>({ v, on, ops }: { v: T; on: (v: T) => void; 
   );
 }
 
-const SiNoSel = ({ v, on }: { v: SiNo; on: (v: SiNo) => void }) => <Opciones v={v} on={on} ops={[["si", "Sí"], ["no", "No"]]} />;
+export const SiNoSel = ({ v, on }: { v: SiNo; on: (v: SiNo) => void }) => <Opciones v={v} on={on} ops={[["si", "Sí"], ["no", "No"]]} />;
 
-function Comentarios({ v, on }: { v: string; on: (v: string) => void }) {
+export function Comentarios({ v, on }: { v: string; on: (v: string) => void }) {
   return <input className="campo" value={v} onChange={(e) => on(e.target.value)} placeholder="Comentarios (opcional)" />;
 }
