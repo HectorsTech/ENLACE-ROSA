@@ -7,3 +7,4 @@ next-env.d.ts
 npm-debug.log*
 # Base de datos local (se regenera desde el seed)
 data/db.json
+.env
