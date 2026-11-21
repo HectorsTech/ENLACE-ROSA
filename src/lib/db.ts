@@ -1,29 +1,35 @@
 import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import { crearSeed } from "./seed";
 import type { BaseDatos, Jornada } from "./types";
 
-// Persistencia local: un archivo JSON en el servidor (data/db.json).
 // Lectura en cada petición para que los cambios de /gob se vean al instante en /eira y viceversa.
+// Compatible con Vercel (filesystem de solo lectura): se escribe en el directorio temporal
+// del sistema (/tmp) y, si falla, se usa un store en memoria inicializado con el seed.
 
-const RUTA = path.join(process.cwd(), "data", "db.json");
+const RUTA = path.join(os.tmpdir(), "enlace-rosa-data.json");
+
+const global_ = globalThis as unknown as { __enlaceRosaDB?: BaseDatos };
 
 function escribir(db: BaseDatos) {
-  fs.mkdirSync(path.dirname(RUTA), { recursive: true });
-  const tmp = `${RUTA}.${process.pid}.tmp`;
-  fs.writeFileSync(tmp, JSON.stringify(db, null, 2), "utf8");
-  fs.renameSync(tmp, RUTA);
+  global_.__enlaceRosaDB = db;
+  try {
+    const tmp = `${RUTA}.${process.pid}.tmp`;
+    fs.writeFileSync(tmp, JSON.stringify(db), "utf8");
+    fs.renameSync(tmp, RUTA);
+  } catch {
+    // Sin escritura disponible: se conserva solo en memoria.
+  }
 }
 
 export function leerDB(): BaseDatos {
-  if (!fs.existsSync(RUTA)) {
-    const db = crearSeed();
-    escribir(db);
-    return db;
-  }
   try {
-    return JSON.parse(fs.readFileSync(RUTA, "utf8")) as BaseDatos;
+    const db = JSON.parse(fs.readFileSync(RUTA, "utf8")) as BaseDatos;
+    global_.__enlaceRosaDB = db;
+    return db;
   } catch {
+    if (global_.__enlaceRosaDB) return global_.__enlaceRosaDB;
     const db = crearSeed();
     escribir(db);
     return db;
@@ -42,7 +48,7 @@ export function mutarDB<T>(fn: (db: BaseDatos) => T): T {
 
 export function reiniciarDB(): BaseDatos {
   const db = crearSeed();
-  const anterior = fs.existsSync(RUTA) ? leerDB().version : 0;
+  const anterior = leerDB().version;
   db.version = anterior + 1;
   escribir(db);
   return db;
