@@ -198,11 +198,3 @@ Puntos de diseño:
 - **Datos siempre frescos**: las páginas se renderizan en cada petición y un componente refresca la vista cuando cambia la versión de los datos (`/api/version`).
 - **Seguridad**: las acciones exclusivas de EIRA (aprobar, observar, crear, reiniciar) exigen sesión válida aunque se invoquen directamente.
 
-## Limitaciones conocidas
-
-- Es una demo: el acceso del municipio depende solo del ID, y las credenciales de respaldo son públicas.
-- La subida de documentos registra el nombre y el tamaño del archivo; **no almacena el archivo** en sí. La carta firmada digitalmente sí genera un PDF real bajo demanda.
-- No existen recordatorios automáticos ni notificaciones por correo o WhatsApp; los avisos a EIRA se muestran dentro de la plataforma.
-- Sin Redis (o equivalente) configurado, los datos no se comparten entre instancias en Vercel.
-- No existe el estado "Rechazado" para los requisitos; se usa "Observaciones".
-- La ficha de campo es un formulario en pantalla, no una plantilla PDF.
