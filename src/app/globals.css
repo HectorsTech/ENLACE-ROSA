@@ -1,0 +1,57 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    @apply bg-white text-pizarra font-sans;
+  }
+  h1,
+  h2,
+  h3 {
+    @apply font-display tracking-tight;
+  }
+  :focus-visible {
+    @apply outline-none ring-2 ring-rosa/60 ring-offset-2;
+  }
+}
+
+@layer components {
+  .tarjeta {
+    @apply rounded-3xl border border-slate-100 bg-white shadow-suave;
+  }
+  .tarjeta-crema {
+    @apply rounded-3xl border border-rosa-100/60 bg-crema;
+  }
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-primario {
+    @apply btn bg-rosa text-white shadow-sm hover:bg-rosa-600 active:bg-rosa-700;
+  }
+  .btn-guinda {
+    @apply btn bg-guinda text-white shadow-sm hover:bg-guinda-600 active:bg-guinda-700;
+  }
+  .btn-secundario {
+    @apply btn border border-slate-200 bg-white text-pizarra hover:border-slate-300 hover:bg-slate-50;
+  }
+  .btn-fantasma {
+    @apply btn text-pizarra-suave hover:bg-slate-100 hover:text-pizarra;
+  }
+  .campo {
+    @apply w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-pizarra placeholder:text-slate-400 transition focus:border-rosa focus:outline-none focus:ring-4 focus:ring-rosa/15;
+  }
+  .etiqueta {
+    @apply mb-1.5 block text-xs font-semibold uppercase tracking-wide text-pizarra-suave;
+  }
+  .ojal {
+    @apply text-[11px] font-semibold uppercase tracking-[0.14em] text-pizarra-suave;
+  }
+  .fondo-puntos {
+    background-image: radial-gradient(rgba(30, 41, 59, 0.07) 1px, transparent 1px);
+    background-size: 18px 18px;
+  }
+}
