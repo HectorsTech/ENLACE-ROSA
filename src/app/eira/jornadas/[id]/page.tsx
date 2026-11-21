@@ -71,7 +71,7 @@ export default async function Expediente({
         <div className="grid gap-6 p-6 lg:grid-cols-[1fr_320px]">
           <div>
             <div className="flex flex-wrap items-center gap-3">
-              <h1 className="text-3xl font-extrabold">{j.municipio}</h1>
+              <h1 className="font-serif text-4xl font-normal tracking-tight">{j.municipio}</h1>
               <SemaforoBadge d={d} grande />
             </div>
             <p className="mt-1 text-pizarra-suave">{j.estado} · Expediente {j.id}</p>
@@ -81,7 +81,7 @@ export default async function Expediente({
               <Dato icono={MapPin} titulo="Sede" valor={j.sede} pie={j.direccion} />
             </div>
           </div>
-          <div className={`rounded-3xl p-5 ${d.semaforo === "luz_verde" ? "bg-emerald-50" : d.semaforo === "riesgo" ? "bg-red-50" : "bg-amber-50"}`}>
+          <div className={`rounded-2xl p-5 ${d.semaforo === "luz_verde" ? "bg-emerald-50" : d.semaforo === "riesgo" ? "bg-red-50" : "bg-amber-50"}`}>
             <div className="flex items-center gap-2">
               {d.semaforo === "luz_verde" ? <ShieldCheck className="h-5 w-5 text-estado-aprobado" /> : <Siren className="h-5 w-5 text-estado-observado" />}
               <p className="font-bold">{d.etiqueta}</p>
@@ -95,7 +95,7 @@ export default async function Expediente({
             <p className="mt-2 text-xs font-medium text-pizarra-suave">{resumenAvance(j)}</p>
           </div>
         </div>
-        <div className="flex flex-wrap items-center gap-3 border-t border-slate-100 bg-crema/60 px-6 py-3 text-sm">
+        <div className="flex flex-wrap items-center gap-3 border-t border-borde bg-crema/60 px-6 py-3 text-sm">
           <span className="ojal">Enlace municipal</span>
           <code className="rounded-lg bg-white px-2 py-1 text-xs text-guinda ring-1 ring-guinda-100">{portal}</code>
           <CopiarEnlace ruta={portal} />
@@ -188,7 +188,7 @@ export default async function Expediente({
                   <p className="flex items-center gap-1.5 text-xs"><Mail className="h-3.5 w-3.5 text-pizarra-suave" /> {j.enlaceMunicipal.correo}</p>
                   <p className="mt-1.5"><ChipModulo tono="guinda">Prefiere: {MEDIO[j.enlaceMunicipal.medioPreferido]}</ChipModulo></p>
                 </div>
-                <div className="border-t border-slate-100 pt-3">
+                <div className="border-t border-borde pt-3">
                   <p className="ojal text-rosa-700">Enlace EIRA</p>
                   <p className="mt-1 font-semibold">{j.enlaceEira.nombre}</p>
                   <p className="text-xs text-pizarra-suave">{j.enlaceEira.cargo} · {j.enlaceEira.telefono}</p>
@@ -247,7 +247,7 @@ function Placeholder({ tab }: { tab: string }) {
         };
   return (
     <div className="tarjeta fondo-puntos grid place-items-center px-6 py-16 text-center">
-      <span className="grid h-16 w-16 place-items-center rounded-3xl bg-rosa-degradado text-white shadow-flotante">
+      <span className="grid h-16 w-16 place-items-center rounded-2xl bg-rosa-degradado text-white shadow-flotante">
         <info.icono className="h-7 w-7" />
       </span>
       <h2 className="mt-5 text-2xl font-bold">{info.titulo}</h2>

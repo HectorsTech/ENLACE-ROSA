@@ -1,0 +1,10 @@
+# Ignorar archivos pesados o generados para ahorrar tokens en graphify
+*.pdf
+node_modules/
+.next/
+out/
+data/
+dist/
+build/
+graphify-out/
+package-lock.json

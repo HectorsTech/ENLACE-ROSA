@@ -14,12 +14,12 @@ export default function LayoutEira({ children }: { children: React.ReactNode }) 
   const mensajes = jornadas.reduce((acc, j) => acc + j.mensajes.filter((m) => !m.atendido).length, 0);
 
   return (
-    <div className="flex min-h-screen bg-[#FCFAF9]">
+    <div className="flex min-h-screen bg-lienzo">
       <AutoRefresco />
       <BarraLateralEira jornadas={items} mensajesPendientes={mensajes} />
       <div className="flex min-w-0 flex-1 flex-col">
         {/* Encabezado móvil */}
-        <div className="flex items-center justify-between border-b border-slate-100 bg-white px-4 py-3 lg:hidden">
+        <div className="flex items-center justify-between border-b border-borde bg-white px-4 py-3 lg:hidden">
           <Link href="/eira"><LogoEira /></Link>
           <Link href="/gob" className="btn-secundario px-3 py-2 text-xs">
             <Landmark className="h-3.5 w-3.5 text-guinda" /> Municipal

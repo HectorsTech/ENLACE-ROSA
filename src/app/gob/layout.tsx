@@ -6,10 +6,10 @@ export const dynamic = "force-dynamic";
 
 export default function LayoutGob({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex min-h-screen flex-col bg-[#FBF8F6]">
+    <div className="flex min-h-screen flex-col bg-lienzo">
       <AutoRefresco />
       <div className="h-1.5 bg-gradient-to-r from-guinda via-guinda to-dorado" />
-      <header className="border-b border-slate-100 bg-white">
+      <header className="bg-lienzo">
         <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-5 py-3.5">
           <Link href="/gob" className="flex items-center gap-3">
             <span className="grid h-10 w-10 place-items-center rounded-2xl bg-rosa text-white shadow-sm">
@@ -17,7 +17,7 @@ export default function LayoutGob({ children }: { children: React.ReactNode }) {
             </span>
             <span className="h-8 w-px bg-slate-200" />
             <span className="leading-tight">
-              <span className="block font-display text-[15px] font-extrabold text-guinda">Portal Municipal</span>
+              <span className="block font-display text-[15px] font-bold text-guinda">Portal Municipal</span>
               <span className="block text-[11px] font-medium text-pizarra-suave">Enlace Rosa · EIRA Movimiento Rosa A.C.</span>
             </span>
           </Link>
@@ -29,10 +29,10 @@ export default function LayoutGob({ children }: { children: React.ReactNode }) {
 
       <main className="mx-auto w-full max-w-5xl flex-1 px-5 py-8">{children}</main>
 
-      <footer className="border-t border-slate-100 bg-white">
-        <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-3 px-5 py-4 text-xs text-pizarra-suave">
+      <footer className="bg-guinda text-guinda-100">
+        <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-3 px-5 py-5 text-xs text-guinda-100">
           <p>EIRA Movimiento Rosa A.C. · Jornadas de detección oportuna de cáncer de mama y cervicouterino</p>
-          <Link href="/eira" className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-slate-400 transition hover:bg-rosa-50 hover:text-rosa-700">
+          <Link href="/eira" className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-guinda-100 transition hover:bg-white/10 hover:text-white">
             <LayoutDashboard className="h-3.5 w-3.5" /> Cambiar a vista EIRA (demo)
           </Link>
         </div>

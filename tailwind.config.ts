@@ -6,6 +6,8 @@ const config: Config = {
     extend: {
       colors: {
         crema: "#FFF5F0",
+        lienzo: "#FDF9F6",
+        borde: "#F3E4DC",
         rosa: {
           DEFAULT: "#E57373",
           50: "#FFF5F5",
@@ -36,10 +38,11 @@ const config: Config = {
       fontFamily: {
         sans: ["'Inter Variable'", "Inter", "Segoe UI", "system-ui", "sans-serif"],
         display: ["'Plus Jakarta Sans Variable'", "'Inter Variable'", "Segoe UI", "sans-serif"],
+        serif: ["'Newsreader Variable'", "Georgia", "'Times New Roman'", "serif"],
       },
       boxShadow: {
-        suave: "0 1px 2px rgba(30,41,59,0.04), 0 8px 24px -12px rgba(30,41,59,0.12)",
-        flotante: "0 20px 50px -20px rgba(229,115,115,0.45)",
+        suave: "0 4px 24px rgba(105,28,50,0.06)",
+        flotante: "0 8px 32px rgba(105,28,50,0.14)",
       },
       backgroundImage: {
         "rosa-degradado": "linear-gradient(135deg, #FFA6A6 0%, #FFB8C6 100%)",

@@ -54,7 +54,7 @@ export function TarjetaRequisito({
     });
 
   return (
-    <article className={`rounded-3xl border bg-white p-5 shadow-suave ${r.estado === "observado" ? "border-red-200" : "border-slate-100"}`}>
+    <article className={`rounded-2xl border bg-white p-5 shadow-suave ${r.estado === "observado" ? "border-red-200" : "border-borde"}`}>
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
@@ -78,7 +78,7 @@ export function TarjetaRequisito({
           <p className="mt-1 text-sm font-semibold">{fechaLimiteTexto}</p>
           <p className="text-xs font-semibold text-pizarra-suave">{r.estado === "aprobado" ? "Cumplido" : venceTexto}</p>
         </div>
-        <div className="rounded-2xl border border-dashed border-slate-200 p-3">
+        <div className="rounded-2xl border border-dashed border-borde p-3">
           <p className="ojal">Qué debe incluir</p>
           <p className="mt-1 text-sm leading-relaxed">{r.criterio}</p>
           <p className="mt-1 text-xs text-pizarra-suave">Formatos: {r.formatos}</p>

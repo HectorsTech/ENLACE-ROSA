@@ -19,7 +19,7 @@ export default function SelectorGob() {
         <span className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-guinda text-white shadow-sm">
           <Landmark className="h-7 w-7" />
         </span>
-        <h1 className="mt-4 text-3xl font-extrabold">Bienvenida, persona enlace municipal</h1>
+        <h1 className="mt-4 font-serif text-4xl font-normal tracking-tight">Bienvenida, persona <em>enlace municipal</em></h1>
         <p className="mt-2 text-pizarra-suave">
           Normalmente entrarás con el enlace único que te envía EIRA. Para la demo, elige un municipio:
         </p>

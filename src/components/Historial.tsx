@@ -16,7 +16,7 @@ const ROL = { eira: "EIRA", municipio: "Municipio", sistema: "Sistema" };
 export function Historial({ eventos }: { eventos: EventoHistorial[] }) {
   const lista = [...eventos].reverse();
   return (
-    <ol className="relative space-y-3 border-l border-dashed border-slate-200 pl-5">
+    <ol className="relative space-y-3 border-l border-dashed border-borde pl-5">
       {lista.map((ev) => {
         const cfg = ICONOS[ev.tipo] ?? ICONOS.creado;
         const Icono = cfg.icono ?? Inbox;

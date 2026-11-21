@@ -150,7 +150,7 @@ export function Asistente({ fechaSugerida, fechaMinima }: { fechaSugerida: strin
                       type="button"
                       onClick={() => set("servicios", alternar(f.servicios, s))}
                       className={`flex items-center gap-2 rounded-2xl border px-3 py-2.5 text-left text-sm font-medium transition ${
-                        on ? "border-rosa bg-rosa-50 text-rosa-700" : "border-slate-200 hover:border-rosa-200"
+                        on ? "border-rosa bg-rosa-50 text-rosa-700" : "border-borde hover:border-rosa-200"
                       }`}
                     >
                       <span className={`grid h-5 w-5 shrink-0 place-items-center rounded-md ${on ? "bg-rosa text-white" : "border border-slate-300"}`}>
@@ -163,7 +163,7 @@ export function Asistente({ fechaSugerida, fechaMinima }: { fechaSugerida: strin
               </div>
             </div>
 
-            <div className="rounded-3xl border border-guinda-100 bg-guinda-50/40 p-5">
+            <div className="rounded-2xl border border-guinda-100 bg-guinda-50/40 p-5">
               <p className="flex items-center gap-2 font-semibold text-guinda"><Building2 className="h-4 w-4" /> Persona enlace del municipio</p>
               <div className="mt-4 grid gap-4 md:grid-cols-2">
                 <Campo etiqueta="Nombre completo">
@@ -218,7 +218,7 @@ export function Asistente({ fechaSugerida, fechaMinima }: { fechaSugerida: strin
                     type="button"
                     onClick={() => set("modulos", alternar(f.modulos, m.clave))}
                     aria-pressed={on}
-                    className={`rounded-3xl border p-4 text-left transition ${on ? "border-rosa bg-rosa-50 shadow-sm" : "border-slate-200 hover:border-rosa-200"}`}
+                    className={`rounded-2xl border p-4 text-left transition ${on ? "border-rosa bg-rosa-50 shadow-sm" : "border-borde hover:border-rosa-200"}`}
                   >
                     <div className="flex items-center justify-between">
                       <span className={`grid h-10 w-10 place-items-center rounded-2xl ${on ? "bg-rosa text-white" : "bg-slate-100 text-pizarra-suave"}`}>
@@ -237,7 +237,7 @@ export function Asistente({ fechaSugerida, fechaMinima }: { fechaSugerida: strin
 
             <div>
               <p className="etiqueta">Requisitos y fechas límite calculadas ({requisitos.length})</p>
-              <div className="overflow-hidden rounded-2xl border border-slate-100">
+              <div className="overflow-hidden rounded-2xl border border-borde">
                 <table className="w-full text-sm">
                   <thead className="bg-slate-50 text-left text-[11px] uppercase tracking-wide text-pizarra-suave">
                     <tr>
@@ -247,7 +247,7 @@ export function Asistente({ fechaSugerida, fechaMinima }: { fechaSugerida: strin
                       <th className="px-4 py-2.5 font-semibold">Fecha límite</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100">
+                  <tbody className="divide-y divide-borde">
                     {[...requisitos].sort((a, b) => b.diasAntes - a.diasAntes).map((r) => (
                       <tr key={r.clave} className={r.modulo ? "bg-dorado-50/50" : ""}>
                         <td className="px-4 py-2.5">
@@ -286,12 +286,12 @@ export function Asistente({ fechaSugerida, fechaMinima }: { fechaSugerida: strin
                 ["Prefiere", { whatsapp: "WhatsApp", correo: "Correo", llamada: "Llamada" }[f.medioPreferido]],
               ]} />
             </div>
-            <div className="rounded-3xl bg-crema p-5 text-sm">
+            <div className="rounded-2xl bg-crema p-5 text-sm">
               <p><span className="font-semibold">Servicios:</span> {f.servicios.join(", ")}</p>
               <p className="mt-1"><span className="font-semibold">Módulos:</span> {f.modulos.length ? MODULOS.filter((m) => f.modulos.includes(m.clave)).map((m) => m.nombre).join(", ") : "Ninguno"}</p>
               <p className="mt-1"><span className="font-semibold">Requisitos:</span> {requisitos.length} ({requisitos.filter((r) => r.critico).length} críticos)</p>
             </div>
-            <div className="flex items-start gap-3 rounded-3xl border border-dashed border-slate-200 p-4 text-sm">
+            <div className="flex items-start gap-3 rounded-2xl border border-dashed border-borde p-4 text-sm">
               <FileSignature className="mt-0.5 h-5 w-5 shrink-0 text-rosa" />
               <p className="text-pizarra-suave">
                 La carta compromiso se generará con las cláusulas institucionales de EIRA bloqueadas. El municipio completará los
@@ -304,7 +304,7 @@ export function Asistente({ fechaSugerida, fechaMinima }: { fechaSugerida: strin
 
         {creada && (
           <div className="py-4 text-center">
-            <span className="mx-auto grid h-16 w-16 place-items-center rounded-3xl bg-estado-aprobado text-white shadow-lg">
+            <span className="mx-auto grid h-16 w-16 place-items-center rounded-2xl bg-estado-aprobado text-white shadow-lg">
               <PartyPopper className="h-8 w-8" />
             </span>
             <h2 className="mt-4 text-2xl font-bold">¡Jornada creada!</h2>
@@ -331,7 +331,7 @@ export function Asistente({ fechaSugerida, fechaMinima }: { fechaSugerida: strin
 
         {/* Navegación */}
         {!creada && (
-          <div className="mt-8 flex items-center justify-between border-t border-slate-100 pt-5">
+          <div className="mt-8 flex items-center justify-between border-t border-borde pt-5">
             <button type="button" onClick={() => setPaso((p) => Math.max(0, p - 1))} disabled={paso === 0} className="btn-fantasma">
               <ArrowLeft className="h-4 w-4" /> Anterior
             </button>
@@ -372,7 +372,7 @@ function Campo({ etiqueta, children }: { etiqueta: string; children: React.React
 
 function Resumen({ titulo, filas }: { titulo: string; filas: [string, string][] }) {
   return (
-    <div className="rounded-3xl border border-slate-100 p-5">
+    <div className="rounded-2xl border border-borde p-5">
       <p className="ojal">{titulo}</p>
       <dl className="mt-2 space-y-1.5 text-sm">
         {filas.map(([k, v]) => (

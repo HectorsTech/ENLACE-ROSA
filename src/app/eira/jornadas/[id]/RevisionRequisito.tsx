@@ -66,10 +66,10 @@ export function RevisionRequisito({
       ? "border-blue-200 ring-4 ring-blue-50"
       : r.estado === "observado"
         ? "border-red-100"
-        : "border-slate-100";
+        : "border-borde";
 
   return (
-    <article id={r.id} className={`scroll-mt-24 rounded-3xl border bg-white p-5 shadow-suave transition ${resalte}`}>
+    <article id={r.id} className={`scroll-mt-24 rounded-2xl border bg-white p-5 shadow-suave transition ${resalte}`}>
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
@@ -95,7 +95,7 @@ export function RevisionRequisito({
             {r.estado === "aprobado" ? "Cumplido" : venceTexto}
           </p>
         </div>
-        <div className="rounded-2xl border border-dashed border-slate-200 p-3">
+        <div className="rounded-2xl border border-dashed border-borde p-3">
           <p className="ojal">Criterio de aprobación</p>
           <p className="mt-1 text-sm leading-relaxed">{r.criterio}</p>
           <p className="mt-1 text-xs text-pizarra-suave">Formatos: {r.formatos}</p>
@@ -113,7 +113,7 @@ export function RevisionRequisito({
       {r.versiones.length > 0 && (
         <div className="mt-4 space-y-2">
           {[...r.versiones].reverse().map((v) => (
-            <div key={v.numero} className={`flex flex-wrap items-center gap-3 rounded-2xl border px-3 py-2.5 ${v === ultima ? "border-slate-200 bg-slate-50/60" : "border-slate-100 opacity-70"}`}>
+            <div key={v.numero} className={`flex flex-wrap items-center gap-3 rounded-2xl border px-3 py-2.5 ${v === ultima ? "border-borde bg-slate-50/60" : "border-borde opacity-70"}`}>
               <span className="grid h-8 w-8 place-items-center rounded-xl bg-white text-pizarra-suave shadow-sm"><FileText className="h-4 w-4" /></span>
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-semibold">

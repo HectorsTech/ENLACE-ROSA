@@ -33,7 +33,7 @@ export default async function PortalMunicipal({ params }: { params: Promise<{ to
 
       <section className="tarjeta p-6">
         <p className="ojal">{j.estado}</p>
-        <h1 className="mt-1 text-3xl font-extrabold">{j.municipio}</h1>
+        <h1 className="mt-1 font-serif text-4xl font-normal tracking-tight">{j.municipio}</h1>
         <div className="mt-3 flex flex-wrap gap-x-6 gap-y-1 text-sm text-pizarra-suave">
           <span className="flex items-center gap-1.5"><CalendarDays className="h-4 w-4" /> {formatoFecha(j.fecha)} · {textoFaltanDias(j.fecha, ahora)}</span>
           <span className="flex items-center gap-1.5"><MapPin className="h-4 w-4" /> {j.sede}</span>

@@ -62,7 +62,7 @@ export default async function TableroEira({ searchParams }: { searchParams: Prom
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="ojal">Equipo EIRA · {formatoFechaLarga(new Date(ahora).toISOString())}</p>
-          <h1 className="mt-1 text-3xl font-extrabold">Tablero de jornadas</h1>
+          <h1 className="mt-1 font-serif text-4xl font-normal tracking-tight">Tablero de <em>jornadas</em></h1>
           <p className="mt-1 text-pizarra-suave">Ordenadas por urgencia y riesgo de retraso.</p>
         </div>
         <Link href="/eira/jornadas/nueva" className="btn-primario">
@@ -72,7 +72,7 @@ export default async function TableroEira({ searchParams }: { searchParams: Prom
 
       {/* Métricas */}
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <div className="relative overflow-hidden rounded-3xl bg-rosa-degradado p-5 text-white shadow-flotante">
+        <div className="relative overflow-hidden rounded-2xl bg-rosa-degradado p-5 text-white shadow-flotante">
           <div className="absolute -right-8 -top-8 h-28 w-28 rounded-full bg-white/20" />
           <p className="text-xs font-semibold uppercase tracking-wider text-white/90">Preparación promedio</p>
           <p className="mt-2 font-display text-4xl font-extrabold">{promedio}%</p>
@@ -86,7 +86,7 @@ export default async function TableroEira({ searchParams }: { searchParams: Prom
 
       {/* Alerta coordinador */}
       {alertas.length > 0 && (
-        <div className="flex flex-wrap items-start gap-4 rounded-3xl border border-red-100 bg-red-50/70 p-5">
+        <div className="flex flex-wrap items-start gap-4 rounded-2xl border border-red-100 bg-red-50/70 p-5">
           <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-estado-observado text-white">
             <PhoneCall className="h-5 w-5" />
           </span>
@@ -120,7 +120,7 @@ export default async function TableroEira({ searchParams }: { searchParams: Prom
                   key={f.clave}
                   href={f.clave === "todas" ? "/eira" : `/eira?filtro=${f.clave}`}
                   className={`inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-sm font-medium transition ${
-                    activo ? "border-rosa bg-rosa text-white shadow-sm" : "border-slate-200 bg-white text-pizarra-suave hover:border-rosa-200 hover:text-pizarra"
+                    activo ? "border-rosa bg-rosa text-white shadow-sm" : "border-borde bg-white text-pizarra-suave hover:border-rosa-200 hover:text-pizarra"
                   }`}
                 >
                   {Icono && <Icono className="h-3.5 w-3.5" />}
@@ -201,7 +201,7 @@ export default async function TableroEira({ searchParams }: { searchParams: Prom
                       </div>
                     </div>
 
-                    <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pl-2 pt-3">
+                    <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-borde pl-2 pt-3">
                       <div className="flex flex-wrap items-center gap-1.5">
                         {j.modulos.map((m) => <ChipModulo key={m}>{NOMBRE_MODULO[m]}</ChipModulo>)}
                         <span className="flex items-center gap-1 text-xs text-pizarra-suave"><Users className="h-3.5 w-3.5" /> {j.enlaceMunicipal.nombre}</span>
@@ -230,7 +230,7 @@ export default async function TableroEira({ searchParams }: { searchParams: Prom
               {porRevisar.map(({ j, r }) => {
                 const v = r.versiones[r.versiones.length - 1];
                 return (
-                  <Link key={r.id} href={`/eira/jornadas/${j.id}#${r.id}`} className="block rounded-2xl border border-slate-100 p-3 transition hover:border-blue-200 hover:bg-blue-50/40">
+                  <Link key={r.id} href={`/eira/jornadas/${j.id}#${r.id}`} className="block rounded-2xl border border-borde p-3 transition hover:border-blue-200 hover:bg-blue-50/40">
                     <p className="text-[11px] font-semibold uppercase tracking-wide text-pizarra-suave">{j.municipio}</p>
                     <p className="truncate text-sm font-semibold">{r.nombre}</p>
                     <p className="mt-0.5 truncate text-xs text-pizarra-suave">

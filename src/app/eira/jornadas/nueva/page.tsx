@@ -17,7 +17,7 @@ export default function NuevaJornada() {
         <span className="font-medium text-pizarra">Nueva jornada</span>
       </nav>
       <div>
-        <h1 className="text-3xl font-extrabold">Crear jornada</h1>
+        <h1 className="font-serif text-4xl font-normal tracking-tight">Crear <em>jornada</em></h1>
         <p className="mt-1 text-pizarra-suave">Tres pasos: datos básicos, requisitos y enlace para el municipio.</p>
       </div>
       <Asistente fechaSugerida={iso(sugerida)} fechaMinima={iso(minima)} />

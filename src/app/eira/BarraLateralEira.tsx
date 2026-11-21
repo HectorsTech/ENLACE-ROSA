@@ -30,7 +30,7 @@ export function BarraLateralEira({ jornadas, mensajesPendientes }: { jornadas: I
   ];
 
   return (
-    <aside className="sticky top-0 hidden h-screen w-[272px] shrink-0 flex-col border-r border-slate-100 bg-white px-4 py-6 lg:flex">
+    <aside className="sticky top-0 hidden h-screen w-[272px] shrink-0 flex-col border-r border-borde bg-white px-4 py-6 lg:flex">
       <Link href="/eira" className="px-2">
         <LogoEira />
       </Link>
