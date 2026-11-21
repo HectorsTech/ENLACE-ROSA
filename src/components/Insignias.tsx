@@ -5,7 +5,7 @@ import type { EstadoRequisito } from "@/lib/types";
 export const ESTADOS: Record<EstadoRequisito, { texto: string; clases: string; punto: string; icono: typeof Clock }> = {
   pendiente: { texto: "Pendiente", clases: "bg-amber-50 text-estado-pendiente ring-amber-200", punto: "bg-estado-pendiente", icono: Clock },
   recibido: { texto: "Recibido", clases: "bg-blue-50 text-estado-recibido ring-blue-200", punto: "bg-estado-recibido", icono: Inbox },
-  observado: { texto: "Observado", clases: "bg-red-50 text-estado-observado ring-red-200", punto: "bg-estado-observado", icono: AlertTriangle },
+  observado: { texto: "Observaciones", clases: "bg-red-50 text-estado-observado ring-red-200", punto: "bg-estado-observado", icono: AlertTriangle },
   aprobado: { texto: "Aprobado", clases: "bg-emerald-50 text-estado-aprobado ring-emerald-200", punto: "bg-estado-aprobado", icono: CheckCircle2 },
 };
 

@@ -67,6 +67,63 @@ export interface MensajeAyuda {
   tipo?: "pregunta" | "cambio_estimado";
 }
 
+export type SiNo = "si" | "no";
+export type SenalInternet = "wifi" | "telcel" | "altan_cfe" | "ninguna";
+
+export interface CartaDatos {
+  autoridad: string;
+  cargoAutoridad: string;
+  dependencia: string;
+  sede: string;
+  direccion: string;
+  horaInicio: string;
+  horaFin: string;
+  mobiliario: string;
+  transporte: string;
+  seguridad: string;
+  firma?: string;
+  firmadaEn?: string;
+  actualizadoEn: string;
+}
+
+export interface FichaCampo {
+  tomaMenos20m: SiNo;
+  voltajeEstable: SiNo;
+  apagones: "nunca" | "ocasionales" | "frecuentes";
+  plantaRespaldo: SiNo;
+  comentariosElectricidad: string;
+  internet: SenalInternet[];
+  espacioPrivado: SiNo;
+  espacioTechado: SiNo;
+  comentariosPrivacidad: string;
+  banos: SiNo;
+  aguaDisponible: SiNo;
+  mesasSillas: SiNo;
+  comentariosMobiliario: string;
+  accesoVehicular: "facil" | "dificil";
+  caminos4x4: SiNo;
+  climaCaminos: string;
+  hablaLenguaIndigena: SiNo;
+  lengua: string;
+  variante: string;
+  diasHorariosLocales: string;
+  personalFemenino: SiNo;
+  transporteComunitario: SiNo;
+  transporteDetalle: string;
+  resguardoNocturno: SiNo;
+  resguardoDetalle: string;
+  actualizadoEn: string;
+}
+
+export interface AlertaOperativa {
+  id: string;
+  clave: string;
+  titulo: string;
+  detalle: string;
+  severidad: "alta" | "media";
+  fecha: string;
+}
+
 export interface Jornada {
   id: string;
   token: string;
@@ -85,6 +142,9 @@ export interface Jornada {
   creadaEn: string;
   requisitos: Requisito[];
   mensajes: MensajeAyuda[];
+  carta?: CartaDatos;
+  ficha?: FichaCampo;
+  alertas: AlertaOperativa[];
 }
 
 export interface BaseDatos {

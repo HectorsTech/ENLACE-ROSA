@@ -1,9 +1,13 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
+  AlertTriangle,
+  Download,
+  FileText,
   CalendarClock,
   CalendarDays,
   ChevronRight,
+  ClipboardList,
   ExternalLink,
   Mail,
   MapPin,
@@ -26,8 +30,20 @@ export const dynamic = "force-dynamic";
 
 const MEDIO = { whatsapp: "WhatsApp", correo: "Correo electrónico", llamada: "Llamada" };
 
-export default async function Expediente({ params }: { params: Promise<{ id: string }> }) {
+const PESTANAS = [
+  { clave: "expediente", texto: "Expediente y checklist", icono: ClipboardList },
+  { clave: "condiciones", texto: "Condiciones y alertas", icono: AlertTriangle },
+] as const;
+
+export default async function Expediente({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ tab?: string }>;
+}) {
   const { id } = await params;
+  const { tab = "expediente" } = await searchParams;
   const j = jornadaPorId(id);
   if (!j) notFound();
 
@@ -89,7 +105,31 @@ export default async function Expediente({ params }: { params: Promise<{ id: str
         </div>
       </section>
 
-        <div className="grid gap-6 xl:grid-cols-[1fr_320px]">
+        {/* Pestañas */}
+      <div className="flex gap-1 overflow-x-auto rounded-full bg-rosa-50 p-1">
+        {PESTANAS.map((t) => {
+          const activa = tab === t.clave;
+          return (
+            <Link
+              key={t.clave}
+              href={t.clave === "expediente" ? `/eira/jornadas/${j.id}` : `/eira/jornadas/${j.id}?tab=${t.clave}`}
+              className={`flex shrink-0 items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition ${
+                activa ? "bg-white text-pizarra shadow-suave" : "text-pizarra-suave hover:text-pizarra"
+              }`}
+            >
+              <t.icono className={`h-4 w-4 ${activa ? "text-rosa" : ""}`} /> {t.texto}
+              {t.clave === "condiciones" && j.alertas.length > 0 && (
+                <span className="rounded-full bg-guinda px-1.5 text-[10px] font-bold text-white">{j.alertas.length}</span>
+              )}
+            </Link>
+          );
+        })}
+      </div>
+
+      {tab === "condiciones" ? (
+        <Condiciones j={j} />
+      ) : (
+      <div className="grid gap-6 xl:grid-cols-[1fr_320px]">
           <div className="min-w-0 space-y-8">
             {grupos.map(({ g, reqs }) =>
               reqs.length === 0 ? null : (
@@ -161,6 +201,16 @@ export default async function Expediente({ params }: { params: Promise<{ id: str
               </div>
             </div>
 
+            <div className="tarjeta p-5">
+              <h2 className="flex items-center gap-2 text-base font-bold"><FileText className="h-4 w-4 text-rosa" /> Carta compromiso</h2>
+              <p className="mt-1 text-xs text-pizarra-suave">
+                {j.carta?.firmadaEn ? `Firmada digitalmente el ${formatoFechaHora(j.carta.firmadaEn)}.` : j.carta ? "Datos llenados; aún sin firma digital." : "El municipio aún no la llena."}
+              </p>
+              <a href={`/eira/jornadas/${j.id}/carta-pdf`} className="btn-secundario mt-3 w-full text-xs">
+                <Download className="h-4 w-4" /> Descargar carta en PDF
+              </a>
+            </div>
+
             <div className="tarjeta-crema p-5">
               <h2 className="flex items-center gap-2 text-base font-bold"><Stethoscope className="h-4 w-4 text-rosa" /> Servicios y módulos</h2>
               <div className="mt-3 flex flex-wrap gap-1.5">
@@ -174,6 +224,7 @@ export default async function Expediente({ params }: { params: Promise<{ id: str
             </div>
           </aside>
         </div>
+      )}
     </div>
   );
 }
@@ -186,6 +237,76 @@ function Dato({ icono: Icono, titulo, valor, pie }: { icono: typeof MapPin; titu
       </p>
       <p className="mt-1 font-semibold leading-snug">{valor}</p>
       <p className="text-xs text-pizarra-suave">{pie}</p>
+    </div>
+  );
+}
+
+const ETIQUETA_INTERNET = { wifi: "Wi-Fi", telcel: "Telcel", altan_cfe: "Altán / CFE", ninguna: "Ninguna" };
+
+function Condiciones({ j }: { j: NonNullable<ReturnType<typeof jornadaPorId>> }) {
+  const f = j.ficha;
+  if (!f) {
+    return (
+      <div className="tarjeta grid place-items-center px-6 py-14 text-center">
+        <span className="grid h-14 w-14 place-items-center rounded-full bg-rosa-50 text-rosa-600"><AlertTriangle className="h-6 w-6" /></span>
+        <h2 className="mt-4 font-serif text-2xl font-normal">Aún no hay ficha de campo</h2>
+        <p className="mt-1 max-w-md text-sm text-pizarra-suave">
+          Cuando {j.municipio} envíe la ficha del lugar y la comunidad, aquí aparecerán las alertas operativas generadas automáticamente.
+        </p>
+      </div>
+    );
+  }
+  const si = (v: string) => (v === "si" ? "Sí" : "No");
+  const filas: [string, string][] = [
+    ["Toma eléctrica a < 20 m", si(f.tomaMenos20m)],
+    ["Voltaje estable", si(f.voltajeEstable)],
+    ["Apagones", { nunca: "Nunca", ocasionales: "Ocasionales", frecuentes: "Frecuentes" }[f.apagones]],
+    ["Planta de respaldo", si(f.plantaRespaldo)],
+    ["Internet / señal", f.internet.map((x) => ETIQUETA_INTERNET[x]).join(", ")],
+    ["Espacio privado", si(f.espacioPrivado)],
+    ["Techado", si(f.espacioTechado)],
+    ["Baños / agua", `${si(f.banos)} / ${si(f.aguaDisponible)}`],
+    ["Mesas y sillas", si(f.mesasSillas)],
+    ["Lengua indígena", f.hablaLenguaIndigena === "si" ? [f.lengua, f.variante].filter(Boolean).join(" · ") || "Sí" : "No"],
+    ["Días/horarios locales", f.diasHorariosLocales || "—"],
+    ["Acceso", `${f.accesoVehicular === "dificil" ? "Difícil" : "Fácil"}${f.caminos4x4 === "si" ? " · 4×4" : ""}`],
+  ];
+  return (
+    <div className="grid gap-6 xl:grid-cols-[1fr_340px]">
+      <section className="min-w-0 space-y-3">
+        <div className="flex items-end justify-between">
+          <h2 className="text-lg font-bold">Alertas operativas ({j.alertas.length})</h2>
+          <span className="text-xs text-pizarra-suave">Ficha enviada {formatoFechaHora(f.actualizadoEn)}</span>
+        </div>
+        {j.alertas.length === 0 && <p className="tarjeta p-6 text-center text-sm text-pizarra-suave">Sin alertas: las condiciones reportadas son adecuadas.</p>}
+        <div className="grid gap-3 md:grid-cols-2">
+          {j.alertas.map((a) => (
+            <article key={a.id} className={`rounded-2xl border p-4 ${a.severidad === "alta" ? "border-guinda-100 bg-guinda-50/60" : "border-borde bg-white"}`}>
+              <div className="flex items-start gap-3">
+                <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-full ${a.severidad === "alta" ? "bg-guinda text-white" : "bg-dorado-50 text-[#8A6A3A]"}`}>
+                  <AlertTriangle className="h-4 w-4" />
+                </span>
+                <div className="min-w-0">
+                  <p className="font-semibold leading-snug">{a.titulo}</p>
+                  <p className="mt-1 text-sm text-pizarra-suave">{a.detalle}</p>
+                  <p className="mt-2 text-[11px] text-slate-400">{formatoFechaHora(a.fecha)}</p>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+      <aside className="tarjeta h-fit p-5">
+        <h2 className="text-base font-bold">Respuestas de la ficha</h2>
+        <dl className="mt-3 space-y-2 text-sm">
+          {filas.map(([k, v]) => (
+            <div key={k} className="flex justify-between gap-4 border-b border-borde pb-2 last:border-0">
+              <dt className="text-pizarra-suave">{k}</dt>
+              <dd className="text-right font-medium">{v}</dd>
+            </div>
+          ))}
+        </dl>
+      </aside>
     </div>
   );
 }

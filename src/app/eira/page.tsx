@@ -204,6 +204,7 @@ export default async function TableroEira({ searchParams }: { searchParams: Prom
                     <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-borde pl-2 pt-3">
                       <div className="flex flex-wrap items-center gap-1.5">
                         {j.modulos.map((m) => <ChipModulo key={m}>{NOMBRE_MODULO[m]}</ChipModulo>)}
+                        {j.alertas.length > 0 && <ChipModulo tono="guinda">{j.alertas.length} alerta(s) operativa(s)</ChipModulo>}
                         <span className="flex items-center gap-1 text-xs text-pizarra-suave"><Users className="h-3.5 w-3.5" /> {j.enlaceMunicipal.nombre}</span>
                       </div>
                       <span className="flex items-center gap-1 text-sm font-semibold text-rosa-700">

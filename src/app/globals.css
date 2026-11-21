@@ -65,3 +65,23 @@
     background-image: none;
   }
 }
+
+@media print {
+  @page {
+    size: letter;
+    margin: 14mm;
+  }
+  body * {
+    visibility: hidden;
+  }
+  #carta-doc,
+  #carta-doc * {
+    visibility: visible;
+  }
+  #carta-doc {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+}

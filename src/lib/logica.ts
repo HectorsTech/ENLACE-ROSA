@@ -12,7 +12,11 @@ export function definicionesPara(modulos: ModuloClave[]): DefinicionRequisito[] 
 }
 
 export function construirRequisitos(fechaJornada: string, modulos: ModuloClave[], creadoEn: string): Requisito[] {
-  return definicionesPara(modulos).map((def) => ({
+  return definicionesPara(modulos).map((def) => requisitoDesdeDefinicion(def, fechaJornada, creadoEn));
+}
+
+export function requisitoDesdeDefinicion(def: DefinicionRequisito, fechaJornada: string, creadoEn: string, detalle?: string): Requisito {
+  return ({
     id: nuevoId("req"),
     clave: def.clave,
     nombre: def.nombre,
@@ -34,10 +38,10 @@ export function construirRequisitos(fechaJornada: string, modulos: ModuloClave[]
         actor: "Sistema Enlace Rosa",
         rol: "sistema" as const,
         fecha: creadoEn,
-        detalle: `Requisito activado con fecha límite D-${def.diasAntes}.`,
+        detalle: detalle ?? `Requisito activado con fecha límite D-${def.diasAntes}.`,
       },
     ],
-  }));
+  });
 }
 
 // ---------- Métricas ----------

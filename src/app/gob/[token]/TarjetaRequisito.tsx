@@ -1,9 +1,11 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useRef, useState, useTransition } from "react";
-import { HelpCircle, Loader2, MessageSquareWarning, Send, Star, Upload } from "lucide-react";
+import { ChevronDown, Clock, FileSignature, FileText, HelpCircle, Loader2, MessageSquareWarning, Send, Star, Upload } from "lucide-react";
 import { ChipModulo, EstadoBadge } from "@/components/Insignias";
+import { Historial } from "@/components/Historial";
 import { NOMBRE_MODULO } from "@/lib/catalogo";
 import { pedirAyuda, subirArchivo } from "@/lib/actions";
 import type { Requisito } from "@/lib/types";
@@ -17,20 +19,25 @@ export function TarjetaRequisito({
   r,
   fechaLimiteTexto,
   venceTexto,
+  ultimaActualizacion,
+  enlace,
 }: {
   jornadaId: string;
   r: Requisito;
   fechaLimiteTexto: string;
   venceTexto: string;
+  ultimaActualizacion: string;
+  enlace?: { href: string; texto: string };
 }) {
   const router = useRouter();
   const [pendiente, iniciar] = useTransition();
   const input = useRef<HTMLInputElement>(null);
+  const [abierto, setAbierto] = useState(false);
   const [ayuda, setAyuda] = useState(false);
   const [mensaje, setMensaje] = useState("");
   const [error, setError] = useState<string | null>(null);
   const ultima = r.versiones[r.versiones.length - 1];
-  const puedeSubir = r.estado !== "aprobado";
+  const puedeSubir = r.estado !== "aprobado" && r.clave !== "ficha_condiciones";
 
   const subir = (f: File | undefined) => {
     if (!f) return;
@@ -54,11 +61,24 @@ export function TarjetaRequisito({
     });
 
   return (
-    <article className={`rounded-2xl border bg-white p-5 shadow-suave ${r.estado === "observado" ? "border-red-200" : "border-borde"}`}>
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="min-w-0 flex-1">
+    <article className={`overflow-hidden rounded-2xl border bg-white shadow-suave ${r.estado === "observado" ? "border-red-200" : "border-borde"}`}>
+      <button
+        type="button"
+        aria-expanded={abierto}
+        aria-controls={`panel-${r.id}`}
+        onClick={() => setAbierto((x) => !x)}
+        className="flex w-full items-center gap-3 px-4 py-3.5 text-left transition hover:bg-crema/60"
+      >
+        <span className="min-w-0 flex-1">
+          <span className="block text-sm font-semibold leading-snug">{r.nombre}</span>
+        </span>
+        <EstadoBadge estado={r.estado} chico />
+        <ChevronDown className={`h-4 w-4 shrink-0 text-pizarra-suave transition ${abierto ? "rotate-180" : ""}`} />
+      </button>
+
+      {abierto && (
+        <div id={`panel-${r.id}`} className="space-y-4 border-t border-borde px-4 py-4">
           <div className="flex flex-wrap items-center gap-2">
-            <h3 className="font-bold leading-snug">{r.nombre}</h3>
             {r.critico && (
               <span className="inline-flex items-center gap-1 rounded-full bg-guinda-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-guinda">
                 <Star className="h-3 w-3" fill="currentColor" /> Importante
@@ -67,68 +87,84 @@ export function TarjetaRequisito({
             {r.opcional && <ChipModulo tono="gris">Opcional</ChipModulo>}
             {r.modulo && <ChipModulo tono="dorado">{NOMBRE_MODULO[r.modulo]}</ChipModulo>}
           </div>
-          <p className="mt-1 text-sm text-pizarra-suave">{r.descripcion}</p>
-        </div>
-        <EstadoBadge estado={r.estado} />
-      </div>
 
-      <div className="mt-4 grid gap-3 md:grid-cols-[200px_1fr]">
-        <div className="rounded-2xl bg-crema p-3">
-          <p className="ojal">Entregar antes del</p>
-          <p className="mt-1 text-sm font-semibold">{fechaLimiteTexto}</p>
-          <p className="text-xs font-semibold text-pizarra-suave">{r.estado === "aprobado" ? "Cumplido" : venceTexto}</p>
-        </div>
-        <div className="rounded-2xl border border-dashed border-borde p-3">
-          <p className="ojal">Qué debe incluir</p>
-          <p className="mt-1 text-sm leading-relaxed">{r.criterio}</p>
-          <p className="mt-1 text-xs text-pizarra-suave">Formatos: {r.formatos}</p>
-        </div>
-      </div>
+          <p className="text-sm text-pizarra-suave">{r.descripcion}</p>
 
-      {r.estado === "observado" && r.motivoObservacion && (
-        <div className="mt-3 flex gap-3 rounded-2xl bg-red-50 p-3 text-sm text-red-800">
-          <MessageSquareWarning className="mt-0.5 h-4 w-4 shrink-0" />
-          <p><span className="font-semibold">Por corregir:</span> {r.motivoObservacion}</p>
-        </div>
-      )}
+          <div className="rounded-2xl border border-dashed border-borde p-3">
+            <p className="ojal">Qué debe incluir</p>
+            <p className="mt-1 text-sm leading-relaxed">{r.criterio}</p>
+            <p className="mt-1 text-xs text-pizarra-suave">Formatos: {r.formatos}</p>
+          </div>
 
-      {ultima && (
-        <p className="mt-3 text-xs text-pizarra-suave">
-          Último archivo: <span className="font-semibold text-pizarra">{ultima.archivo}</span> (v{ultima.numero}, {ultima.tamano})
-        </p>
-      )}
+          <div className="grid gap-2 text-xs sm:grid-cols-2">
+            <div className="rounded-2xl bg-crema p-3">
+              <p className="ojal">Entregar antes del</p>
+              <p className="mt-1 text-sm font-semibold">{fechaLimiteTexto}</p>
+              <p className="font-semibold text-pizarra-suave">{r.estado === "aprobado" ? "Cumplido" : venceTexto}</p>
+            </div>
+            <div className="rounded-2xl bg-crema p-3">
+              <p className="ojal">Última actualización</p>
+              <p className="mt-1 flex items-center gap-1.5 text-sm font-semibold"><Clock className="h-3.5 w-3.5" /> {ultimaActualizacion}</p>
+            </div>
+          </div>
 
-      <div className="mt-4 flex flex-wrap items-center gap-2">
-        {puedeSubir && (
-          <>
-            <input ref={input} type="file" className="hidden" onChange={(e) => subir(e.target.files?.[0])} />
-            <button type="button" disabled={pendiente} onClick={() => input.current?.click()} className="btn bg-guinda text-white hover:opacity-90">
-              {pendiente ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
-              {ultima ? "Subir nueva versión" : "Subir documento"}
+          {r.estado === "observado" && r.motivoObservacion && (
+            <div className="flex gap-3 rounded-2xl bg-red-50 p-3 text-sm text-red-800">
+              <MessageSquareWarning className="mt-0.5 h-4 w-4 shrink-0" />
+              <p><span className="font-semibold">Por corregir:</span> {r.motivoObservacion}</p>
+            </div>
+          )}
+
+          {ultima && (
+            <div className="flex items-center gap-3 rounded-2xl border border-borde px-3 py-2.5">
+              <span className="grid h-8 w-8 place-items-center rounded-xl bg-crema text-pizarra-suave"><FileText className="h-4 w-4" /></span>
+              <p className="min-w-0 flex-1 truncate text-sm font-semibold">
+                <span className="mr-1.5 rounded-md bg-pizarra px-1.5 py-0.5 text-[10px] font-bold text-white">v{ultima.numero}</span>
+                {ultima.archivo}
+                <span className="block text-xs font-normal text-pizarra-suave">{ultima.tamano}</span>
+              </p>
+            </div>
+          )}
+
+          <div className="flex flex-wrap items-center gap-2">
+            {enlace && (
+              <Link href={enlace.href} className={r.clave === "ficha_condiciones" ? "btn-guinda" : "btn-secundario"}>
+                <FileSignature className="h-4 w-4" /> {enlace.texto}
+              </Link>
+            )}
+            {puedeSubir && (
+              <>
+                <input ref={input} type="file" className="hidden" onChange={(e) => subir(e.target.files?.[0])} />
+                <button type="button" disabled={pendiente} onClick={() => input.current?.click()} className="btn bg-guinda text-white hover:opacity-90">
+                  {pendiente ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+                  {ultima ? "Subir nueva versión" : "Subir documento"}
+                </button>
+              </>
+            )}
+            <button type="button" onClick={() => setAyuda((x) => !x)} className="btn-fantasma ml-auto px-3 py-2 text-xs">
+              <HelpCircle className="h-3.5 w-3.5" /> Tengo una duda
             </button>
-          </>
-        )}
-        <button type="button" onClick={() => setAyuda((x) => !x)} className="btn-fantasma ml-auto px-3 py-2 text-xs">
-          <HelpCircle className="h-3.5 w-3.5" /> Tengo una duda
-        </button>
-      </div>
+          </div>
 
-      {ayuda && (
-        <div className="mt-3 rounded-2xl bg-rosa-50 p-4">
-          <textarea
-            value={mensaje}
-            onChange={(e) => setMensaje(e.target.value)}
-            rows={3}
-            placeholder="Escribe tu pregunta para el equipo de EIRA"
-            className="campo"
-          />
-          <button type="button" onClick={enviarAyuda} disabled={pendiente || mensaje.trim().length < 5} className="btn mt-2 bg-rosa text-white">
-            {pendiente ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />} Enviar
-          </button>
+          {ayuda && (
+            <div className="rounded-2xl bg-rosa-50 p-4">
+              <textarea value={mensaje} onChange={(e) => setMensaje(e.target.value)} rows={3} placeholder="Escribe tu pregunta para el equipo de EIRA" className="campo" />
+              <button type="button" onClick={enviarAyuda} disabled={pendiente || mensaje.trim().length < 5} className="btn mt-2 bg-rosa text-white">
+                {pendiente ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />} Enviar
+              </button>
+            </div>
+          )}
+
+          {error && <p className="text-sm font-medium text-estado-observado">{error}</p>}
+
+          <div>
+            <p className="ojal mb-2">Historial y comentarios</p>
+            <div className="rounded-2xl bg-lienzo p-4">
+              <Historial eventos={r.historial} />
+            </div>
+          </div>
         </div>
       )}
-
-      {error && <p className="mt-2 text-sm font-medium text-estado-observado">{error}</p>}
     </article>
   );
 }

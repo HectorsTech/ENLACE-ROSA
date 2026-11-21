@@ -5,12 +5,13 @@ import { LogoEira } from "@/components/LogoEira";
 import { listarJornadas } from "@/lib/db";
 import { diagnostico } from "@/lib/logica";
 import { BarraLateralEira } from "./BarraLateralEira";
+import { BuscadorJornadas } from "./BuscadorJornadas";
 
 export const dynamic = "force-dynamic";
 
 export default function LayoutEira({ children }: { children: React.ReactNode }) {
   const jornadas = listarJornadas();
-  const items = jornadas.map((j) => ({ id: j.id, municipio: j.municipio, semaforo: diagnostico(j).semaforo }));
+  const items = jornadas.map((j) => ({ id: j.id, municipio: j.municipio, estado: j.estado, sede: j.sede, token: j.token, semaforo: diagnostico(j).semaforo }));
   const mensajes = jornadas.reduce((acc, j) => acc + j.mensajes.filter((m) => !m.atendido).length, 0);
 
   return (
@@ -24,6 +25,9 @@ export default function LayoutEira({ children }: { children: React.ReactNode }) 
           <Link href="/gob" className="btn-secundario px-3 py-2 text-xs">
             <Landmark className="h-3.5 w-3.5 text-guinda" /> Municipal
           </Link>
+        </div>
+        <div className="border-b border-borde bg-white px-4 pb-3 lg:hidden">
+          <BuscadorJornadas jornadas={items} />
         </div>
         <main className="mx-auto w-full max-w-[1280px] flex-1 px-5 py-8 lg:px-10">{children}</main>
       </div>

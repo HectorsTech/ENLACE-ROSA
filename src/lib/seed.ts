@@ -96,13 +96,14 @@ function crear(o: OpcionesJornada): Jornada {
     creadaEn,
     requisitos,
     mensajes: o.mensajes ?? [],
+    alertas: [],
   };
 }
 
 const LUCIA = { nombre: "Lucía Fernández", cargo: "Coordinadora de Jornadas EIRA", telefono: "55 4120 8890", correo: "lucia.fernandez@eira.org.mx" };
 const ANDREA = { nombre: "Andrea Márquez", cargo: "Enlace operativo EIRA", telefono: "55 3318 2271", correo: "andrea.marquez@eira.org.mx" };
 
-export const ESQUEMA = 2;
+export const ESQUEMA = 4;
 
 export function crearSeed(): BaseDatos {
   // 1) Naucalpan — 65 %, carta observada y 2 pendientes críticos próximos a vencer.
@@ -116,7 +117,7 @@ export function crearSeed(): BaseDatos {
     direccion: "Av. Juárez 39, El Mueble, 53000 Naucalpan de Juárez, Méx.",
     diasParaJornada: 12,
     creadaHaceHoras: 24 * 9,
-    servicios: ["Mastografía (40–69 años)", "Exploración clínica de mama", "Papanicolaou (25 años o más)"],
+    servicios: ["Mastografía", "Exploración clínica de mama", "Papanicolaou"],
     modulos: ["unidad_movil"],
     estimadoPersonas: "100_200",
     enlaceEira: LUCIA,
@@ -188,7 +189,7 @@ export function crearSeed(): BaseDatos {
     diasParaJornada: 6,
     creadaHaceHoras: 24 * 25,
     servicios: [
-      "Mastografía (40–69 años)",
+      "Mastografía",
       "Exploración clínica de mama",
       "Ultrasonido mamario",
       "Plática de autoexploración",
@@ -227,7 +228,7 @@ export function crearSeed(): BaseDatos {
     direccion: "Calle 2 Norte s/n, San Gregorio Zacapechpan, 72760 San Pedro Cholula, Pue.",
     diasParaJornada: 11,
     creadaHaceHoras: 52,
-    servicios: ["Mastografía (40–69 años)", "Papanicolaou (25 años o más)", "Plática de autoexploración"],
+    servicios: ["Mastografía", "Papanicolaou", "Plática de autoexploración"],
     modulos: ["comunidad_indigena"],
     estimadoPersonas: "100_200",
     enlaceEira: ANDREA,

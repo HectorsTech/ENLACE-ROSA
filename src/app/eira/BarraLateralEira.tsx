@@ -3,13 +3,13 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useTransition } from "react";
-import { Bell, FileStack, LayoutDashboard, Landmark, Plus, RotateCcw, Send, MapPin } from "lucide-react";
+import { Bell, FileStack, LayoutDashboard, Landmark, LogOut, Plus, RotateCcw, Send, MapPin } from "lucide-react";
 import { LogoEira } from "@/components/LogoEira";
 import { reiniciarDemo } from "@/lib/actions";
+import { cerrarSesionEira } from "@/lib/auth-actions";
+import { BuscadorJornadas, type ItemBusqueda } from "./BuscadorJornadas";
 
-interface ItemJornada {
-  id: string;
-  municipio: string;
+interface ItemJornada extends ItemBusqueda {
   semaforo: "luz_verde" | "riesgo" | "preparacion";
 }
 
@@ -35,7 +35,9 @@ export function BarraLateralEira({ jornadas, mensajesPendientes }: { jornadas: I
         <LogoEira />
       </Link>
 
-      <Link href="/eira/jornadas/nueva" className="btn-primario mt-7 w-full py-3">
+      <div className="mt-6"><BuscadorJornadas jornadas={jornadas} /></div>
+
+      <Link href="/eira/jornadas/nueva" className="btn-primario mt-4 w-full py-3">
         <Plus className="h-4 w-4" strokeWidth={2.6} /> Crear jornada
       </Link>
 
@@ -85,9 +87,9 @@ export function BarraLateralEira({ jornadas, mensajesPendientes }: { jornadas: I
 
       <div className="mt-auto space-y-3">
         {mensajesPendientes > 0 && (
-          <div className="flex items-center gap-2 rounded-2xl bg-rosa-50 px-3 py-2.5 text-xs font-medium text-rosa-700">
-            <Bell className="h-4 w-4" /> {mensajesPendientes} pregunta(s) de municipios sin responder
-          </div>
+          <Link href="/eira/preguntas" className="flex items-center gap-2 rounded-2xl bg-rosa-50 px-3 py-2.5 text-xs font-medium text-rosa-700 transition hover:bg-rosa-100">
+            <Bell className="h-4 w-4 shrink-0" /> {mensajesPendientes} pregunta(s) de municipios sin responder
+          </Link>
         )}
         <div className="tarjeta-crema flex items-center gap-3 p-3">
           <span className="grid h-9 w-9 place-items-center rounded-full bg-rosa-degradado text-sm font-bold text-white">LF</span>
@@ -115,6 +117,9 @@ export function BarraLateralEira({ jornadas, mensajesPendientes }: { jornadas: I
           >
             <RotateCcw className={`h-3.5 w-3.5 ${pendiente ? "animate-spin" : ""}`} />
           </button>
+          <form action={cerrarSesionEira}>
+            <button type="submit" title="Cerrar sesión" className="btn-secundario px-3 py-2 text-xs"><LogOut className="h-3.5 w-3.5" /></button>
+          </form>
         </div>
       </div>
     </aside>

@@ -135,12 +135,12 @@ export interface DefinicionModulo {
 export const MODULOS: DefinicionModulo[] = [
   {
     clave: "unidad_movil",
-    nombre: "Unidad móvil de mastografía",
-    descripcion: "Agrega la validación de la ruta de acceso y el espacio de estacionamiento de la unidad.",
+    nombre: "Tamizaje Rosa",
+    descripcion: "Agrega la validación de la ruta de acceso y el espacio de estacionamiento de la unidad de Tamizaje Rosa.",
     requisitos: [
       {
         clave: "acceso_unidad_movil",
-        nombre: "Ruta de acceso y estacionamiento de la unidad móvil",
+        nombre: "Ruta de acceso y estacionamiento de la unidad de Tamizaje Rosa",
         descripcion:
           "Confirma que la unidad puede llegar sin problemas por calles estrechas, topes o caminos de terracería.",
         grupo: "evidencia",
@@ -196,9 +196,9 @@ export const MODULOS: DefinicionModulo[] = [
 ];
 
 export const SERVICIOS_EIRA = [
-  "Mastografía (40–69 años)",
+  "Mastografía",
   "Exploración clínica de mama",
-  "Papanicolaou (25 años o más)",
+  "Papanicolaou",
   "Ultrasonido mamario",
   "Plática de autoexploración",
   "Prueba de VPH",
@@ -219,7 +219,7 @@ export const REFERENCIA_EDADES =
   "Mastografía para mujeres de 40 a 69 años; exploración clínica o Papanicolaou para mujeres de 25 años o más.";
 
 export const NOMBRE_MODULO: Record<ModuloClave, string> = {
-  unidad_movil: "Unidad móvil",
+  unidad_movil: "Tamizaje Rosa",
   comunidad_indigena: "Comunidad indígena",
   estancia_multiple: "Estancia > 1 día",
 };

@@ -4,13 +4,18 @@ import { CalendarDays, ChevronRight, MapPin, UserRound } from "lucide-react";
 import { BarraProgreso } from "@/components/Insignias";
 import { GRUPOS } from "@/lib/catalogo";
 import { jornadaPorToken } from "@/lib/db";
-import { fechaLimiteDesde, formatoFecha, textoFaltanDias, textoVencimiento } from "@/lib/fechas";
+import { fechaLimiteDesde, formatoFecha, formatoFechaHora, textoFaltanDias, textoVencimiento } from "@/lib/fechas";
 import { EstimadoPersonas } from "./EstimadoPersonas";
 import { progreso, resumenAvance } from "@/lib/logica";
 import type { GrupoRequisito } from "@/lib/types";
 import { TarjetaRequisito } from "./TarjetaRequisito";
 
 export const dynamic = "force-dynamic";
+
+const ENLACES: Record<string, (token: string) => { href: string; texto: string }> = {
+  carta_compromiso: (t) => ({ href: `/gob/${t}/carta`, texto: "Generar carta compromiso" }),
+  ficha_condiciones: (t) => ({ href: `/gob/${t}/ficha-campo`, texto: "Llenar ficha" }),
+};
 
 export default async function PortalMunicipal({ params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;
@@ -57,12 +62,19 @@ export default async function PortalMunicipal({ params }: { params: Promise<{ to
         editable={ahora <= new Date(fechaLimiteDesde(j.fecha, 5)).getTime()}
       />
 
-      {grupos.map(({ g, reqs }) =>
-        reqs.length === 0 ? null : (
-          <section key={g}>
-            <h2 className="text-lg font-bold">{GRUPOS[g].titulo}</h2>
-            <p className="mb-3 text-sm text-pizarra-suave">{GRUPOS[g].descripcion}</p>
-            <div className="space-y-4">
+      <div className="grid items-start gap-6 lg:grid-cols-3">
+        {grupos.map(({ g, reqs }) => (
+          <section key={g} className="rounded-2xl bg-crema/60 p-4">
+            <div className="mb-4 px-1">
+              <div className="flex items-center justify-between gap-2">
+                <h2 className="font-serif text-xl font-normal leading-tight">{GRUPOS[g].titulo}</h2>
+                <span className="shrink-0 rounded-full bg-white px-2 py-0.5 text-xs font-bold text-pizarra-suave ring-1 ring-borde">
+                  {reqs.filter((r) => r.estado === "aprobado").length}/{reqs.length}
+                </span>
+              </div>
+              <p className="mt-1 text-xs text-pizarra-suave">{GRUPOS[g].descripcion}</p>
+            </div>
+            <div className="space-y-2.5">
               {reqs.map((r) => (
                 <TarjetaRequisito
                   key={r.id}
@@ -70,12 +82,15 @@ export default async function PortalMunicipal({ params }: { params: Promise<{ to
                   r={r}
                   fechaLimiteTexto={formatoFecha(r.fechaLimite)}
                   venceTexto={textoVencimiento(r.fechaLimite, ahora)}
+                  ultimaActualizacion={formatoFechaHora(r.historial[r.historial.length - 1]?.fecha ?? j.creadaEn)}
+                  enlace={ENLACES[r.clave]?.(j.token)}
                 />
               ))}
+              {reqs.length === 0 && <p className="rounded-2xl bg-white p-4 text-center text-sm text-pizarra-suave">Sin requisitos en este grupo.</p>}
             </div>
           </section>
-        ),
-      )}
+        ))}
+      </div>
     </div>
   );
 }
