@@ -25,6 +25,18 @@ export function BotonAtendido({ jornadaId, mensajeId }: { jornadaId: string; men
   );
 }
 
+export function CopiarTexto({ texto }: { texto: string }) {
+  return (
+    <button
+      type="button"
+      onClick={() => navigator.clipboard?.writeText(texto)}
+      className="rounded-lg px-2 py-1 text-[11px] font-semibold text-rosa-700 hover:bg-rosa-50"
+    >
+      Copiar ID
+    </button>
+  );
+}
+
 export function CopiarEnlace({ ruta }: { ruta: string }) {
   return (
     <button

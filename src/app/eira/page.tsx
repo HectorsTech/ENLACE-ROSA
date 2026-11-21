@@ -3,7 +3,10 @@ import {
   AlertOctagon,
   ArrowRight,
   CalendarDays,
+  CheckCheck,
   CheckCircle2,
+  Hourglass,
+  Search,
   Clock,
   Inbox,
   MapPin,
@@ -16,45 +19,56 @@ import {
 import { BarraProgreso, ChipModulo, EstadoBadge, SemaforoBadge } from "@/components/Insignias";
 import { NOMBRE_MODULO, TEXTO_RANGO } from "@/lib/catalogo";
 import { listarJornadas } from "@/lib/db";
-import { formatoFecha, formatoFechaLarga, formatoFechaHora, textoFaltanDias, textoVencimiento } from "@/lib/fechas";
+import { formatoFecha, formatoFechaLarga, formatoFechaHora, jornadaCompletada, textoFaltanDias, textoVencimiento } from "@/lib/fechas";
 import { conteo, diagnostico, observados, progreso, vencenEn } from "@/lib/logica";
 
 export const dynamic = "force-dynamic";
 
 const FILTROS = [
   { clave: "todas", texto: "Todas" },
+  { clave: "progreso", texto: "En progreso", icono: Hourglass },
+  { clave: "completadas", texto: "Completadas", icono: CheckCheck },
   { clave: "72h", texto: "Vencen en < 72 h", icono: Clock },
   { clave: "observados", texto: "Con observados", icono: AlertOctagon },
   { clave: "listas", texto: "Listas", icono: ShieldCheck },
 ] as const;
 
-export default async function TableroEira({ searchParams }: { searchParams: Promise<{ filtro?: string }> }) {
-  const { filtro = "todas" } = await searchParams;
+export default async function TableroEira({ searchParams }: { searchParams: Promise<{ filtro?: string; q?: string }> }) {
+  const { filtro = "todas", q = "" } = await searchParams;
   const ahora = Date.now();
   const todas = (await listarJornadas())
-    .map((j) => ({ j, d: diagnostico(j, ahora), p: progreso(j), c: conteo(j), v72: vencenEn(j, 72, ahora), obs: observados(j) }))
-    .sort((a, b) => a.d.urgencia - b.d.urgencia);
+    .map((j) => ({ j, d: diagnostico(j, ahora), p: progreso(j), c: conteo(j), v72: vencenEn(j, 72, ahora), obs: observados(j), fin: jornadaCompletada(j.fecha, ahora) }))
+    .sort((a, b) => (a.fin === b.fin ? (a.fin ? +new Date(b.j.fecha) - +new Date(a.j.fecha) : a.d.urgencia - b.d.urgencia) : a.fin ? 1 : -1));
+  const activas = todas.filter((x) => !x.fin);
+
+  const norm = (t: string) => t.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+  const consulta = norm(q.trim());
 
   const filtradas = todas.filter((x) => {
-    if (filtro === "72h") return x.v72.length > 0;
-    if (filtro === "observados") return x.obs.length > 0;
-    if (filtro === "listas") return x.d.semaforo === "luz_verde";
+    if (consulta && !norm(`${x.j.municipio} ${x.j.estado} ${x.j.sede} ${x.j.token}`).includes(consulta)) return false;
+    if (filtro === "progreso") return !x.fin;
+    if (filtro === "completadas") return x.fin;
+    if (filtro === "72h") return !x.fin && x.v72.length > 0;
+    if (filtro === "observados") return !x.fin && x.obs.length > 0;
+    if (filtro === "listas") return !x.fin && x.d.semaforo === "luz_verde";
     return true;
   });
 
   const cuenta = {
     todas: todas.length,
-    "72h": todas.filter((x) => x.v72.length > 0).length,
-    observados: todas.filter((x) => x.obs.length > 0).length,
-    listas: todas.filter((x) => x.d.semaforo === "luz_verde").length,
+    progreso: activas.length,
+    completadas: todas.length - activas.length,
+    "72h": activas.filter((x) => x.v72.length > 0).length,
+    observados: activas.filter((x) => x.obs.length > 0).length,
+    listas: activas.filter((x) => x.d.semaforo === "luz_verde").length,
   } as Record<string, number>;
 
-  const enRiesgo = todas.filter((x) => x.d.semaforo === "riesgo").length;
-  const porRevisar = todas.flatMap((x) =>
+  const enRiesgo = activas.filter((x) => x.d.semaforo === "riesgo").length;
+  const porRevisar = activas.flatMap((x) =>
     x.j.requisitos.filter((r) => r.estado === "recibido").map((r) => ({ j: x.j, r })),
   );
-  const alertas = todas.filter((x) => x.d.alertaCoordinador);
-  const promedio = Math.round(todas.reduce((a, x) => a + x.p, 0) / Math.max(1, todas.length));
+  const alertas = activas.filter((x) => x.d.alertaCoordinador);
+  const promedio = Math.round(activas.reduce((a, x) => a + x.p, 0) / Math.max(1, activas.length));
 
   return (
     <div className="space-y-8">
@@ -77,7 +91,7 @@ export default async function TableroEira({ searchParams }: { searchParams: Prom
           <p className="text-xs font-semibold uppercase tracking-wider text-white/90">Preparación promedio</p>
           <p className="mt-2 font-display text-4xl font-extrabold">{promedio}%</p>
           <div className="mt-3"><BarraProgreso valor={promedio} color="blanco" alto="h-2" /></div>
-          <p className="mt-2 text-xs text-white/90">{todas.length} jornadas activas</p>
+          <p className="mt-2 text-xs text-white/90">{activas.length} jornadas en progreso</p>
         </div>
         <Metrica icono={ShieldCheck} tono="text-estado-aprobado bg-emerald-50" titulo="Luz Verde Logística" valor={cuenta.listas} pie="Listas para movilizar" />
         <Metrica icono={Siren} tono="text-estado-observado bg-red-50" titulo="Riesgo de reprogramación" valor={enRiesgo} pie="No cubrir viáticos aún" />
@@ -111,6 +125,12 @@ export default async function TableroEira({ searchParams }: { searchParams: Prom
       <div className="grid gap-8 xl:grid-cols-[1fr_340px]">
         {/* Lista de jornadas */}
         <section className="min-w-0">
+          <form action="/eira" method="get" className="relative mb-4">
+            {filtro !== "todas" && <input type="hidden" name="filtro" value={filtro} />}
+            <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+            <input name="q" defaultValue={q} placeholder="Buscar jornada por nombre, estado o sede" aria-label="Buscar jornada" className="campo rounded-full pl-11 pr-24" />
+            <button type="submit" className="btn-primario absolute right-1.5 top-1/2 -translate-y-1/2 px-4 py-1.5 text-xs">Buscar</button>
+          </form>
           <div className="mb-4 flex flex-wrap gap-2">
             {FILTROS.map((f) => {
               const activo = filtro === f.clave;
@@ -118,7 +138,7 @@ export default async function TableroEira({ searchParams }: { searchParams: Prom
               return (
                 <Link
                   key={f.clave}
-                  href={f.clave === "todas" ? "/eira" : `/eira?filtro=${f.clave}`}
+                  href={`/eira${f.clave !== "todas" || q ? "?" : ""}${[f.clave !== "todas" && `filtro=${f.clave}`, q && `q=${encodeURIComponent(q)}`].filter(Boolean).join("&")}`}
                   className={`inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-sm font-medium transition ${
                     activo ? "border-rosa bg-rosa text-white shadow-sm" : "border-borde bg-white text-pizarra-suave hover:border-rosa-200 hover:text-pizarra"
                   }`}
@@ -138,11 +158,11 @@ export default async function TableroEira({ searchParams }: { searchParams: Prom
             </div>
           ) : (
             <div className="space-y-4">
-              {filtradas.map(({ j, d, p, c, v72 }) => {
+              {filtradas.map(({ j, d, p, c, v72, fin }) => {
                 const proximo = j.requisitos
                   .filter((r) => r.estado !== "aprobado")
                   .sort((a, b) => +new Date(a.fechaLimite) - +new Date(b.fechaLimite))[0];
-                const borde = { luz_verde: "before:bg-estado-aprobado", riesgo: "before:bg-estado-observado", preparacion: "before:bg-estado-pendiente" }[d.semaforo];
+                const borde = fin ? "before:bg-slate-300" : { luz_verde: "before:bg-estado-aprobado", riesgo: "before:bg-estado-observado", preparacion: "before:bg-estado-pendiente" }[d.semaforo];
                 return (
                   <Link
                     key={j.id}
@@ -159,7 +179,7 @@ export default async function TableroEira({ searchParams }: { searchParams: Prom
                           <MapPin className="h-3.5 w-3.5" /> {j.sede}
                         </p>
                       </div>
-                      <SemaforoBadge d={d} />
+                      {fin ? <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-2.5 py-1 text-xs font-bold text-pizarra-suave"><CheckCheck className="h-3.5 w-3.5" /> Completada</span> : <SemaforoBadge d={d} />}
                     </div>
 
                     <div className="mt-4 grid gap-4 pl-2 md:grid-cols-[1.1fr_1fr_1.2fr]">

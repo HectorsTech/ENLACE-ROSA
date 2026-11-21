@@ -10,10 +10,10 @@ import { cerrarSesionEira } from "@/lib/auth-actions";
 import { BuscadorJornadas, type ItemBusqueda } from "./BuscadorJornadas";
 
 interface ItemJornada extends ItemBusqueda {
-  semaforo: "luz_verde" | "riesgo" | "preparacion";
+  semaforo: "luz_verde" | "riesgo" | "preparacion" | "completada";
 }
 
-const PUNTO = { luz_verde: "bg-estado-aprobado", riesgo: "bg-estado-observado", preparacion: "bg-estado-pendiente" };
+const PUNTO = { luz_verde: "bg-estado-aprobado", riesgo: "bg-estado-observado", preparacion: "bg-estado-pendiente", completada: "bg-slate-300" };
 
 export function BarraLateralEira({ jornadas, mensajesPendientes }: { jornadas: ItemJornada[]; mensajesPendientes: number }) {
   const ruta = usePathname();

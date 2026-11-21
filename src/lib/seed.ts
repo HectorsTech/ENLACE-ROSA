@@ -252,10 +252,48 @@ export function crearSeed(): BaseDatos {
     },
   });
 
+  // 4) Atizapán de Zaragoza — jornada ya realizada (completada).
+  const ata = "Lic. Karla Mejía (Atizapán)";
+  const hecho = (archivo: string, tamano: string, hace: number): Paso[] => [
+    { t: "subida", archivo, tamano, por: ata, hace },
+    { t: "aprobado", por: ANDREA.nombre, hace: hace - 6 },
+  ];
+  const atizapan = crear({
+    id: "jor-atizapan",
+    token: "atizapan-2026",
+    municipio: "Atizapán de Zaragoza",
+    estado: "Estado de México",
+    sede: "Deportivo Las Américas",
+    direccion: "Av. Las Américas s/n, Las Américas, 52970 Atizapán de Zaragoza, Méx.",
+    diasParaJornada: -8,
+    creadaHaceHoras: 24 * 45,
+    servicios: ["Mastografía", "Exploración clínica de mama", "Papanicolaou"],
+    modulos: [],
+    estimadoPersonas: "50_100",
+    enlaceEira: ANDREA,
+    enlaceMunicipal: {
+      nombre: "Lic. Karla Mejía Osorio",
+      cargo: "Coordinadora de Salud Municipal",
+      correo: "karla.mejia@atizapan.gob.mx",
+      celular: "55 3340 7712",
+      whatsapp: "55 3340 7712",
+      medioPreferido: "correo",
+    },
+    historia: {
+      carta_compromiso: hecho("Carta_Compromiso_Atizapan.pdf", "1.6 MB", 900),
+      permiso_espacio: hecho("Permiso_Deportivo_Las_Americas.pdf", "480 KB", 880),
+      proteccion_civil: hecho("Dictamen_PC_Atizapan.pdf", "720 KB", 860),
+      jurisdiccion_sanitaria: hecho("Vinculacion_Jurisdiccion_Atizapan.pdf", "590 KB", 840),
+      ficha_condiciones: hecho("Ficha_condiciones_Atizapan.pdf", "380 KB", 800),
+      confirmacion_enlace: hecho("Confirmacion_transporte_Atizapan.pdf", "170 KB", 500),
+      fotos_espacio: hecho("Fotos_Deportivo.zip", "9.1 MB", 480),
+    },
+  });
+
   return {
     esquema: ESQUEMA,
     version: 1,
     actualizadoEn: new Date().toISOString(),
-    jornadas: [naucalpan, toluca, sanPedro],
+    jornadas: [naucalpan, toluca, sanPedro, atizapan],
   };
 }

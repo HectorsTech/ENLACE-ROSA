@@ -4,6 +4,7 @@ import { AutoRefresco } from "@/components/AutoRefresco";
 import { LogoEira } from "@/components/LogoEira";
 import { listarJornadas } from "@/lib/db";
 import { diagnostico } from "@/lib/logica";
+import { jornadaCompletada } from "@/lib/fechas";
 import { BarraLateralEira } from "./BarraLateralEira";
 import { BuscadorJornadas } from "./BuscadorJornadas";
 
@@ -11,7 +12,7 @@ export const dynamic = "force-dynamic";
 
 export default async function LayoutEira({ children }: { children: React.ReactNode }) {
   const jornadas = await listarJornadas();
-  const items = jornadas.map((j) => ({ id: j.id, municipio: j.municipio, estado: j.estado, sede: j.sede, token: j.token, semaforo: diagnostico(j).semaforo }));
+  const items = jornadas.map((j) => ({ id: j.id, municipio: j.municipio, estado: j.estado, sede: j.sede, token: j.token, semaforo: jornadaCompletada(j.fecha) ? ("completada" as const) : diagnostico(j).semaforo }));
   const mensajes = jornadas.reduce((acc, j) => acc + j.mensajes.filter((m) => !m.atendido).length, 0);
 
   return (

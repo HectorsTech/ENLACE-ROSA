@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ChevronRight } from "lucide-react";
 import { jornadaPorToken } from "@/lib/db";
-import { formatoFechaLarga } from "@/lib/fechas";
+import { propsCarta } from "@/lib/cartaProps";
 import { CartaEditor } from "./CartaEditor";
 
 export const dynamic = "force-dynamic";
@@ -37,28 +37,8 @@ export default async function CartaCompromiso({ params }: { params: Promise<{ to
         estado={req.estado}
         versionActual={ultima?.archivo}
         firmaInicial={c?.firma}
-        token={j.token}
-        inicial={{
-          autoridad: c?.autoridad ?? "",
-          cargoAutoridad: c?.cargoAutoridad ?? "",
-          dependencia: c?.dependencia ?? "",
-          sede: c?.sede ?? j.sede,
-          direccion: c?.direccion ?? j.direccion,
-          horaInicio: c?.horaInicio ?? "09:00",
-          horaFin: c?.horaFin ?? "17:00",
-          mobiliario: c?.mobiliario ?? "",
-          transporte: c?.transporte ?? "",
-          seguridad: c?.seguridad ?? "",
-        }}
-        contexto={{
-          municipio: j.municipio,
-          estado: j.estado,
-          fechaTexto: formatoFechaLarga(j.fecha),
-          enlaceNombre: j.enlaceMunicipal.nombre,
-          enlaceCargo: j.enlaceMunicipal.cargo,
-          enlaceContacto: [j.enlaceMunicipal.celular, j.enlaceMunicipal.correo].filter(Boolean).join(" · "),
-          coordinadoraEira: j.enlaceEira.nombre,
-        }}
+        pdfUrl={`/gob/${j.token}/carta/pdf`}
+        {...propsCarta(j)}
       />
     </div>
   );

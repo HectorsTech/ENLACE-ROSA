@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useRef, useState, useTransition } from "react";
-import { CheckCircle2, Download, Loader2, PenLine, Save, Upload } from "lucide-react";
+import { CheckCircle2, Download, Eye, FileText, Loader2, PenLine, RefreshCw, Save, Upload } from "lucide-react";
 import { EstadoBadge } from "@/components/Insignias";
 import { firmarCarta, guardarCarta, subirArchivo } from "@/lib/actions";
 import type { EstadoRequisito } from "@/lib/types";
@@ -17,7 +17,8 @@ export function CartaEditor({
   estado,
   versionActual,
   firmaInicial,
-  token,
+  pdfUrl,
+  modo = "municipio",
 }: {
   jornadaId: string;
   requisitoId: string;
@@ -26,21 +27,50 @@ export function CartaEditor({
   estado: EstadoRequisito;
   versionActual?: string;
   firmaInicial?: string;
-  token: string;
+  pdfUrl: string;
+  modo?: "municipio" | "eira";
 }) {
   const router = useRouter();
+  const esEira = modo === "eira";
   const [d, setD] = useState<DatosCarta>(inicial);
   const [firma, setFirma] = useState<string | null>(firmaInicial ?? null);
   const [pendiente, iniciar] = useTransition();
   const [msg, setMsg] = useState<{ ok: boolean; texto: string } | null>(null);
+  const [vista, setVista] = useState<"documento" | "pdf">("documento");
+  const [pdfKey, setPdfKey] = useState(0);
   const archivo = useRef<HTMLInputElement>(null);
   const set = (k: keyof DatosCarta, v: string) => setD((x) => ({ ...x, [k]: v }));
 
+  const guardarTodo = async () => {
+    const res = await guardarCarta({ jornadaId, datos: d, ...(esEira ? {} : { firma }) });
+    if (!res.ok) setMsg({ ok: false, texto: res.error });
+    return res.ok;
+  };
+
   const guardar = () =>
     iniciar(async () => {
-      const res = await guardarCarta({ jornadaId, datos: d });
-      setMsg(res.ok ? { ok: true, texto: "Datos guardados." } : { ok: false, texto: res.error });
+      if (await guardarTodo()) {
+        setMsg({ ok: true, texto: "Datos guardados." });
+        setPdfKey(Date.now());
+      }
       router.refresh();
+    });
+
+  const verPdf = () =>
+    iniciar(async () => {
+      if (await guardarTodo()) {
+        setMsg(null);
+        setVista("pdf");
+        setPdfKey(Date.now());
+      }
+      router.refresh();
+    });
+
+  const descargar = () =>
+    iniciar(async () => {
+      if (!(await guardarTodo())) return;
+      router.refresh();
+      window.location.assign(`${pdfUrl}?t=${Date.now()}`);
     });
 
   const firmarYEnviar = () =>
@@ -48,6 +78,7 @@ export function CartaEditor({
       if (!firma) return setMsg({ ok: false, texto: "Dibuja tu firma en el recuadro." });
       const res = await firmarCarta({ jornadaId, datos: d, firma });
       setMsg(res.ok ? { ok: true, texto: "Carta firmada y enviada a EIRA. Estado: Recibido." } : { ok: false, texto: res.error });
+      if (res.ok) setPdfKey(Date.now());
       router.refresh();
     });
 
@@ -61,6 +92,15 @@ export function CartaEditor({
       router.refresh();
     });
   };
+
+  const mensaje = msg && (
+    <p className={`flex items-center gap-1.5 text-sm font-medium ${msg.ok ? "text-estado-aprobado" : "text-estado-observado"}`}>
+      {msg.ok && <CheckCircle2 className="h-4 w-4" />} {msg.texto}
+    </p>
+  );
+
+  const pestana = (activa: boolean) =>
+    `inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-sm font-medium ${activa ? "bg-guinda text-white" : "bg-white text-pizarra-suave ring-1 ring-borde"}`;
 
   return (
     <div className="grid gap-6 xl:grid-cols-[400px_1fr]">
@@ -85,36 +125,63 @@ export function CartaEditor({
           </button>
         </div>
 
-        <div className="tarjeta space-y-3 p-5">
-          <div className="flex items-center justify-between">
-            <h2 className="text-base font-bold">Firma y envío</h2>
-            <EstadoBadge estado={estado} chico />
+        {esEira ? (
+          <div className="tarjeta space-y-3 p-5">
+            <div className="flex items-center justify-between">
+              <h2 className="text-base font-bold">Documento</h2>
+              <EstadoBadge estado={estado} chico />
+            </div>
+            <button type="button" disabled={pendiente} onClick={descargar} className="btn-guinda w-full">
+              <Download className="h-4 w-4" /> Descargar PDF
+            </button>
+            <p className="text-[11px] text-pizarra-suave">Si cambias los datos, la firma digital del municipio se invalida y deberá firmar de nuevo.</p>
+            {versionActual && <p className="text-xs text-pizarra-suave">Último archivo del municipio: <span className="font-semibold text-pizarra">{versionActual}</span></p>}
+            {mensaje}
           </div>
-          <p className="etiqueta">Firma de la autoridad municipal</p>
-          <FirmaPad inicial={firmaInicial} onChange={setFirma} />
-          <button type="button" disabled={pendiente || !firma || estado === "aprobado"} onClick={firmarYEnviar} className="btn-guinda w-full">
-            {pendiente ? <Loader2 className="h-4 w-4 animate-spin" /> : <PenLine className="h-4 w-4" />} Firmar y enviar a EIRA
-          </button>
-          <a href={`/gob/${token}/carta/pdf`} className="btn-secundario w-full">
-            <Download className="h-4 w-4" /> Descargar PDF para firma y sello
-          </a>
-          <p className="text-[11px] text-pizarra-suave">Descarga la última versión guardada. También puedes imprimirla, firmarla y sellarla a mano, y subir el escaneo.</p>
-          <input ref={archivo} type="file" accept=".pdf,image/*" className="hidden" onChange={(e) => subir(e.target.files?.[0])} />
-          <button type="button" disabled={pendiente || estado === "aprobado"} onClick={() => archivo.current?.click()} className="btn-secundario w-full">
-            <Upload className="h-4 w-4" /> {versionActual ? "Subir nueva versión firmada y sellada" : "Subir versión firmada y sellada"}
-          </button>
-          {versionActual && <p className="text-xs text-pizarra-suave">Último archivo: <span className="font-semibold text-pizarra">{versionActual}</span></p>}
-          {msg && (
-            <p className={`flex items-center gap-1.5 text-sm font-medium ${msg.ok ? "text-estado-aprobado" : "text-estado-observado"}`}>
-              {msg.ok && <CheckCircle2 className="h-4 w-4" />} {msg.texto}
-            </p>
-          )}
-        </div>
+        ) : (
+          <div className="tarjeta space-y-3 p-5">
+            <div className="flex items-center justify-between">
+              <h2 className="text-base font-bold">Firma y envío</h2>
+              <EstadoBadge estado={estado} chico />
+            </div>
+            <p className="etiqueta">Firma de la autoridad municipal</p>
+            <FirmaPad inicial={firmaInicial} onChange={setFirma} />
+            <button type="button" disabled={pendiente || !firma || estado === "aprobado"} onClick={firmarYEnviar} className="btn-guinda w-full">
+              {pendiente ? <Loader2 className="h-4 w-4 animate-spin" /> : <PenLine className="h-4 w-4" />} Firmar y enviar a EIRA
+            </button>
+            <button type="button" disabled={pendiente} onClick={descargar} className="btn-secundario w-full">
+              <Download className="h-4 w-4" /> Descargar PDF para firma y sello
+            </button>
+            <p className="text-[11px] text-pizarra-suave">Guarda tus datos y firma, y descarga el PDF con ellos. También puedes imprimirlo, firmarlo y sellarlo a mano, y subir el escaneo.</p>
+            <input ref={archivo} type="file" accept=".pdf,image/*" className="hidden" onChange={(e) => subir(e.target.files?.[0])} />
+            <button type="button" disabled={pendiente || estado === "aprobado"} onClick={() => archivo.current?.click()} className="btn-secundario w-full">
+              <Upload className="h-4 w-4" /> {versionActual ? "Subir nueva versión firmada y sellada" : "Subir versión firmada y sellada"}
+            </button>
+            {versionActual && <p className="text-xs text-pizarra-suave">Último archivo: <span className="font-semibold text-pizarra">{versionActual}</span></p>}
+            {mensaje}
+          </div>
+        )}
       </div>
 
       <div className="min-w-0">
-        <p className="ojal mb-2 print:hidden">Vista previa del documento</p>
-        <DocumentoCarta d={d} c={contexto} firma={firma} />
+        <div className="mb-3 flex flex-wrap items-center gap-2 print:hidden">
+          <button type="button" onClick={() => setVista("documento")} className={pestana(vista === "documento")}>
+            <FileText className="h-4 w-4" /> Vista del documento
+          </button>
+          <button type="button" disabled={pendiente} onClick={verPdf} className={pestana(vista === "pdf")}>
+            <Eye className="h-4 w-4" /> Vista previa PDF
+          </button>
+          {vista === "pdf" && (
+            <button type="button" disabled={pendiente} onClick={verPdf} className="inline-flex items-center gap-1 text-xs font-semibold text-pizarra-suave hover:text-pizarra">
+              <RefreshCw className="h-3.5 w-3.5" /> Actualizar
+            </button>
+          )}
+        </div>
+        {vista === "documento" ? (
+          <DocumentoCarta d={d} c={contexto} firma={esEira ? firmaInicial : firma} />
+        ) : (
+          <iframe key={pdfKey} title="Vista previa del PDF" src={`${pdfUrl}?inline=1&t=${pdfKey}`} className="h-[1000px] w-full rounded-lg border border-borde bg-white" />
+        )}
       </div>
     </div>
   );

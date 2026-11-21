@@ -4,6 +4,7 @@ import {
   AlertTriangle,
   Download,
   FileText,
+  Pencil,
   CalendarClock,
   CalendarDays,
   ChevronRight,
@@ -20,10 +21,10 @@ import {
 import { BarraProgreso, ChipModulo, SemaforoBadge } from "@/components/Insignias";
 import { GRUPOS, NOMBRE_MODULO, TEXTO_RANGO } from "@/lib/catalogo";
 import { jornadaPorId } from "@/lib/db";
-import { formatoFecha, formatoFechaHora, horasRestantes, textoFaltanDias, textoVencimiento } from "@/lib/fechas";
+import { formatoFecha, formatoFechaHora, jornadaCompletada, horasRestantes, textoFaltanDias, textoVencimiento } from "@/lib/fechas";
 import { conteo, diagnostico, progreso, resumenAvance } from "@/lib/logica";
 import type { GrupoRequisito } from "@/lib/types";
-import { BotonAtendido, CopiarEnlace } from "./Acciones";
+import { BotonAtendido, CopiarEnlace, CopiarTexto } from "./Acciones";
 import { RevisionRequisito } from "./RevisionRequisito";
 
 export const dynamic = "force-dynamic";
@@ -48,6 +49,7 @@ export default async function Expediente({
   if (!j) notFound();
 
   const ahora = Date.now();
+  const completada = jornadaCompletada(j.fecha, ahora);
   const d = diagnostico(j, ahora);
   const p = progreso(j);
   const c = conteo(j);
@@ -74,7 +76,7 @@ export default async function Expediente({
               <h1 className="font-serif text-4xl font-normal tracking-tight">{j.municipio}</h1>
               <SemaforoBadge d={d} grande />
             </div>
-            <p className="mt-1 text-pizarra-suave">{j.estado} · Expediente {j.id}</p>
+            <p className="mt-1 text-pizarra-suave">{j.estado} · Expediente {j.id}{completada && <span className="ml-2 rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-pizarra-suave">Completada</span>}</p>
             <div className="mt-4 grid gap-3 text-sm sm:grid-cols-3">
               <Dato icono={CalendarDays} titulo="Día de la jornada" valor={formatoFecha(j.fecha)} pie={textoFaltanDias(j.fecha, ahora)} />
               <Dato icono={CalendarClock} titulo="Fecha límite general" valor={formatoFecha(j.fechaLimite)} pie="D-5 · último requisito" />
@@ -96,7 +98,10 @@ export default async function Expediente({
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-3 border-t border-borde bg-crema/60 px-6 py-3 text-sm">
-          <span className="ojal">Enlace municipal</span>
+          <span className="ojal">ID del municipio</span>
+          <code className="rounded-lg bg-white px-2 py-1 text-xs font-bold text-guinda ring-1 ring-guinda-100">{j.token}</code>
+          <CopiarTexto texto={j.token} />
+          <span className="ojal">Enlace</span>
           <code className="rounded-lg bg-white px-2 py-1 text-xs text-guinda ring-1 ring-guinda-100">{portal}</code>
           <CopiarEnlace ruta={portal} />
           <Link href={portal} target="_blank" className="inline-flex items-center gap-1 text-xs font-semibold text-guinda hover:underline">
@@ -204,9 +209,14 @@ export default async function Expediente({
             <div className="tarjeta p-5">
               <h2 className="flex items-center gap-2 text-base font-bold"><FileText className="h-4 w-4 text-rosa" /> Carta compromiso</h2>
               <p className="mt-1 text-xs text-pizarra-suave">
-                {j.carta?.firmadaEn ? `Firmada digitalmente el ${formatoFechaHora(j.carta.firmadaEn)}.` : j.carta ? "Datos llenados; aún sin firma digital." : "El municipio aún no la llena."}
+                {j.carta?.firmadaEn && j.requisitos.find((r) => r.clave === "carta_compromiso")?.versiones.length
+                  ? `Firmada digitalmente el ${formatoFechaHora(j.carta.firmadaEn)}.`
+                  : j.carta ? "Datos llenados; aún sin firma enviada." : "Aún sin datos llenados."}
               </p>
-              <a href={`/eira/jornadas/${j.id}/carta-pdf`} className="btn-secundario mt-3 w-full text-xs">
+              <Link href={`/eira/jornadas/${j.id}/carta`} className="btn-guinda mt-3 w-full text-xs">
+                <Pencil className="h-4 w-4" /> Editar y previsualizar plantilla
+              </Link>
+              <a href={`/eira/jornadas/${j.id}/carta-pdf`} className="btn-secundario mt-2 w-full text-xs">
                 <Download className="h-4 w-4" /> Descargar carta en PDF
               </a>
             </div>

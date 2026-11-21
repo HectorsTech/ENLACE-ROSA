@@ -4,7 +4,7 @@ import { CalendarDays, ChevronRight, MapPin, UserRound } from "lucide-react";
 import { BarraProgreso } from "@/components/Insignias";
 import { GRUPOS } from "@/lib/catalogo";
 import { jornadaPorToken } from "@/lib/db";
-import { fechaLimiteDesde, formatoFecha, formatoFechaHora, textoFaltanDias, textoVencimiento } from "@/lib/fechas";
+import { fechaLimiteDesde, formatoFecha, jornadaCompletada, formatoFechaHora, textoFaltanDias, textoVencimiento } from "@/lib/fechas";
 import { EstimadoPersonas } from "./EstimadoPersonas";
 import { progreso, resumenAvance } from "@/lib/logica";
 import type { GrupoRequisito } from "@/lib/types";
@@ -38,7 +38,7 @@ export default async function PortalMunicipal({ params }: { params: Promise<{ to
       </nav>
 
       <section className="tarjeta p-6">
-        <p className="ojal">{j.estado}</p>
+        <p className="ojal">{j.estado}{jornadaCompletada(j.fecha, ahora) && <span className="ml-2 rounded-full bg-slate-100 px-2.5 py-0.5 text-[11px] normal-case tracking-normal text-pizarra-suave">Jornada completada</span>}</p>
         <h1 className="mt-1 font-serif text-4xl font-normal tracking-tight">{j.municipio}</h1>
         <div className="mt-3 flex flex-wrap gap-x-6 gap-y-1 text-sm text-pizarra-suave">
           <span className="flex items-center gap-1.5"><CalendarDays className="h-4 w-4" /> {formatoFecha(j.fecha)} · {textoFaltanDias(j.fecha, ahora)}</span>

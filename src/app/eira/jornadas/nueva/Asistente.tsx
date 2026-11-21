@@ -43,6 +43,7 @@ export function Asistente({ fechaSugerida, fechaMinima }: { fechaSugerida: strin
   const [error, setError] = useState<string | null>(null);
   const [creada, setCreada] = useState<{ id: string; token: string } | null>(null);
   const [copiado, setCopiado] = useState(false);
+  const [copiadoId, setCopiadoId] = useState(false);
   const [mismoWhats, setMismoWhats] = useState(true);
   const [f, setF] = useState<NuevaJornadaInput>({
     municipio: "",
@@ -328,22 +329,33 @@ export function Asistente({ fechaSugerida, fechaMinima }: { fechaSugerida: strin
               <PartyPopper className="h-8 w-8" />
             </span>
             <h2 className="mt-4 text-2xl font-bold">¡Jornada creada!</h2>
-            <p className="mt-1 text-pizarra-suave">Comparte este enlace único con la persona enlace de {f.municipio}.</p>
-            <div className="mx-auto mt-5 flex max-w-lg items-center gap-2 rounded-2xl border border-guinda-100 bg-guinda-50/50 p-2 pl-4">
-              <code className="flex-1 truncate text-left text-sm font-semibold text-guinda">/gob/{creada.token}</code>
+            <p className="mt-1 text-pizarra-suave">Comparte este ID único con la persona enlace de {f.municipio}: lo ingresa en <span className="font-semibold">/gob</span> para entrar a su panel.</p>
+            <div className="mx-auto mt-5 max-w-lg rounded-2xl border border-guinda-100 bg-guinda-50/50 p-4">
+              <p className="ojal text-guinda">ID único del municipio</p>
+              <div className="mt-2 flex items-center gap-2">
+                <code className="flex-1 truncate rounded-xl bg-white px-4 py-3 text-left text-lg font-bold text-guinda ring-1 ring-guinda-100">{creada.token}</code>
+                <button type="button" onClick={() => { navigator.clipboard?.writeText(creada.token); setCopiadoId(true); }} className="btn-guinda px-4 py-3 text-xs">
+                  {copiadoId ? <CheckCircle2 className="h-4 w-4" /> : <Copy className="h-4 w-4" />} {copiadoId ? "Copiado" : "Copiar ID"}
+                </button>
+              </div>
+            </div>
+            <p className="mt-4 text-xs text-pizarra-suave">O comparte el enlace directo:</p>
+            <div className="mx-auto mt-2 flex max-w-lg items-center gap-2 rounded-2xl border border-borde p-2 pl-4">
+              <code className="flex-1 truncate text-left text-sm font-semibold text-pizarra">/gob/{creada.token}</code>
               <button
                 type="button"
                 onClick={() => {
                   navigator.clipboard?.writeText(`${window.location.origin}/gob/${creada.token}`);
                   setCopiado(true);
                 }}
-                className="btn-guinda px-3 py-2 text-xs"
+                className="btn-secundario px-3 py-2 text-xs"
               >
                 {copiado ? <CheckCircle2 className="h-4 w-4" /> : <Copy className="h-4 w-4" />} {copiado ? "Copiado" : "Copiar"}
               </button>
             </div>
             <div className="mt-6 flex flex-wrap justify-center gap-3">
               <Link href={`/eira/jornadas/${creada.id}`} className="btn-primario">Ver expediente <ArrowRight className="h-4 w-4" /></Link>
+              <Link href={`/eira/jornadas/${creada.id}/carta`} className="btn-secundario">Editar carta compromiso</Link>
               <Link href={`/gob/${creada.token}`} target="_blank" className="btn-secundario">Abrir portal municipal <ExternalLink className="h-4 w-4" /></Link>
             </div>
           </div>

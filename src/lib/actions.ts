@@ -176,7 +176,7 @@ export async function actualizarEstimado(input: { jornadaId: string; estimado: R
 
 type DatosCartaInput = Omit<CartaDatos, "actualizadoEn" | "firma" | "firmadaEn">;
 
-function aplicarCarta(j: Jornada, d: DatosCartaInput, firma?: string) {
+function aplicarCarta(j: Jornada, d: DatosCartaInput, firma?: string | null) {
   const corto = (t: string, n = 600) => t.trim().slice(0, n);
   const campos: DatosCartaInput = {
     autoridad: corto(d.autoridad, 120),
@@ -195,21 +195,22 @@ function aplicarCarta(j: Jornada, d: DatosCartaInput, firma?: string) {
   const ahora = new Date().toISOString();
   j.carta = {
     ...campos,
-    firma: firma ?? (cambio ? undefined : previa?.firma),
-    firmadaEn: firma ? ahora : cambio ? undefined : previa?.firmadaEn,
+    firma: typeof firma === "string" ? firma : firma === null || cambio ? undefined : previa?.firma,
+    firmadaEn: typeof firma === "string" ? ahora : firma === null || cambio ? undefined : previa?.firmadaEn,
     actualizadoEn: ahora,
   };
 }
 
 /** Municipio: guarda los campos variables de la carta compromiso (si cambian, la firma digital se invalida). */
-export async function guardarCarta(input: { jornadaId: string; datos: DatosCartaInput }): Promise<Resultado> {
+export async function guardarCarta(input: { jornadaId: string; datos: DatosCartaInput; firma?: string | null }): Promise<Resultado> {
   const d = input.datos;
+  if (typeof input.firma === "string" && !/^data:image\/png;base64,[A-Za-z0-9+/=]+$/.test(input.firma)) return { ok: false, error: "Firma no válida." };
   if (!d.autoridad.trim() || !d.sede.trim()) return { ok: false, error: "Indica al menos la autoridad municipal y la sede." };
   try {
     await mutarDB((db) => {
       const j = db.jornadas.find((x) => x.id === input.jornadaId);
       if (!j) throw new Error("Jornada no encontrada.");
-      aplicarCarta(j, d);
+      aplicarCarta(j, d, input.firma);
     });
     revalidarTodo();
     return { ok: true };

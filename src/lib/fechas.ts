@@ -29,6 +29,12 @@ export function fechaLimiteDesde(fechaJornadaIso: string, diasAntes: number): st
   return fechaMx(h.anio, h.mes0, h.dia - diasAntes, 18).toISOString();
 }
 
+/** La jornada se considera completada cuando termina el día en que se realizó (hora de México). */
+export function jornadaCompletada(fechaIso: string, ahora = Date.now()): boolean {
+  const h = hoyMx(new Date(fechaIso));
+  return ahora >= fechaMx(h.anio, h.mes0, h.dia + 1, 0).getTime();
+}
+
 export function horasRestantes(iso: string, ahora = Date.now()): number {
   return (new Date(iso).getTime() - ahora) / HORA;
 }

@@ -28,7 +28,8 @@ Hay dos perfiles con vistas separadas:
 Funciones principales:
 
 - **Tablero EIRA** con las jornadas ordenadas por urgencia, semáforo de riesgo (Luz Verde Logística, En preparación, Riesgo de reprogramación) y bandeja de documentos por revisar.
-- **Buscador de jornadas** en la barra lateral (por municipio, estado, sede o ID).
+- **Buscador de jornadas** en la barra lateral y en el tablero (por municipio, estado, sede o ID).
+- **Estado de la jornada**: *En progreso* o *Completada*. Cambia solo cuando pasa el día de realización.
 - **Asistente de 3 pasos** para crear una jornada, con requisitos y fechas límite calculadas automáticamente.
 - **Portal municipal en 3 columnas** (Jurídico y administrativo, Identidad y convocatoria, Evidencia del espacio) con requisitos en acordeón.
 - **Revisión de documentos**: EIRA aprueba u observa cada versión, con motivo obligatorio al observar. Todo queda en un historial.
@@ -46,6 +47,7 @@ Funciones principales:
 | Naucalpan de Juárez, Estado de México | `naucalpan-2026` | Carta observada, pendientes críticos y una duda sin responder |
 | Toluca, Estado de México | `toluca-2026` | Todo aprobado (Luz Verde) |
 | San Pedro Cholula, Puebla | `cholula-2026` | Recién creada, con pocos avances |
+| Atizapán de Zaragoza, Estado de México | `atizapan-2026` | Jornada ya realizada (aparece como Completada en EIRA) |
 
 **Equipo EIRA** (en `/login-eira`):
 
@@ -59,14 +61,14 @@ Son credenciales de respaldo para la demo. En producción cámbialas con las [va
 ### Como persona del Equipo EIRA
 
 1. Entra a `/login-eira` con tu usuario y contraseña. Cualquier ruta bajo `/eira` te redirige ahí si no tienes sesión.
-2. **Tablero** (`/eira`): ve las jornadas por urgencia. Los filtros muestran las que vencen en menos de 72 h, las que tienen observaciones y las que están listas. La bandeja de la derecha lista los documentos recibidos esperando revisión.
+2. **Tablero** (`/eira`): ve las jornadas por urgencia, con la barra de búsqueda y los filtros *En progreso* y *Completadas*. Las completadas pasan al final de la lista y no cuentan en las métricas. Los filtros muestran las que vencen en menos de 72 h, las que tienen observaciones y las que están listas. La bandeja de la derecha lista los documentos recibidos esperando revisión.
 3. **Buscar una jornada**: escribe en el buscador de la barra lateral y elige el resultado.
 4. **Crear una jornada** (botón "Crear jornada"):
    - *Paso 1*: municipio, estado, sede, dirección, fecha, estimado de personas, servicios y datos de la persona enlace (correo, celular, WhatsApp, medio preferido).
    - *Paso 2*: módulos opcionales (Tamizaje Rosa, Comunidad indígena, Estancia de más de un día) y vista previa de los requisitos con sus fechas límite.
-   - *Paso 3*: confirmación y generación del **ID único**. Compártelo con la persona enlace del municipio.
+   - *Paso 3*: confirmación y generación del **ID único**, que aparece al terminar con un botón para copiarlo. Compártelo con la persona enlace del municipio.
 5. **Expediente** (`/eira/jornadas/[id]`):
-   - Pestaña *Expediente y checklist*: aprueba u observa cada documento recibido, consulta el historial, los contactos y los servicios. Aquí descargas la carta compromiso en PDF.
+   - Pestaña *Expediente y checklist*: aprueba u observa cada documento recibido, consulta el historial, los contactos y los servicios. En la tarjeta "Carta compromiso" puedes **editar la plantilla, previsualizarla en PDF** y descargarla (si cambias datos, la firma del municipio se invalida).
    - Pestaña *Condiciones y alertas*: tarjetas de alertas operativas generadas por la ficha de campo, junto con las respuestas del municipio.
 6. **Dudas sin responder**: el aviso de la barra lateral abre `/eira/preguntas`, donde marcas cada duda como atendida.
 7. Cierra sesión con el botón de la barra lateral.
