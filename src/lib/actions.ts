@@ -15,13 +15,13 @@ function revalidarTodo() {
 
 type Resultado = { ok: true } | { ok: false; error: string };
 
-function conRequisito(
+async function conRequisito(
   jornadaId: string,
   requisitoId: string,
   fn: (j: Jornada, r: Jornada["requisitos"][number]) => void,
-): Resultado {
+): Promise<Resultado> {
   try {
-    mutarDB((db) => {
+    await mutarDB((db) => {
       const j = db.jornadas.find((x) => x.id === jornadaId);
       const r = j?.requisitos.find((x) => x.id === requisitoId);
       if (!j || !r) throw new Error("No se encontró el requisito.");
@@ -126,7 +126,7 @@ export async function pedirAyuda(input: { jornadaId: string; requisitoId?: strin
   const mensaje = input.mensaje.trim();
   if (mensaje.length < 5) return { ok: false, error: "Escribe tu pregunta." };
   try {
-    mutarDB((db) => {
+    await mutarDB((db) => {
       const j = db.jornadas.find((x) => x.id === input.jornadaId);
       if (!j) throw new Error("Jornada no encontrada.");
       j.mensajes.unshift({
@@ -149,7 +149,7 @@ export async function pedirAyuda(input: { jornadaId: string; requisitoId?: strin
 export async function actualizarEstimado(input: { jornadaId: string; estimado: RangoPersonas }): Promise<Resultado> {
   if (!RANGOS_PERSONAS.some((r) => r.clave === input.estimado)) return { ok: false, error: "Opción no válida." };
   try {
-    mutarDB((db) => {
+    await mutarDB((db) => {
       const j = db.jornadas.find((x) => x.id === input.jornadaId);
       if (!j) throw new Error("Jornada no encontrada.");
       if (Date.now() > new Date(fechaLimiteDesde(j.fecha, 5)).getTime()) {
@@ -206,7 +206,7 @@ export async function guardarCarta(input: { jornadaId: string; datos: DatosCarta
   const d = input.datos;
   if (!d.autoridad.trim() || !d.sede.trim()) return { ok: false, error: "Indica al menos la autoridad municipal y la sede." };
   try {
-    mutarDB((db) => {
+    await mutarDB((db) => {
       const j = db.jornadas.find((x) => x.id === input.jornadaId);
       if (!j) throw new Error("Jornada no encontrada.");
       aplicarCarta(j, d);
@@ -224,7 +224,7 @@ export async function firmarCarta(input: { jornadaId: string; datos: DatosCartaI
   if (!d.autoridad.trim() || !d.sede.trim()) return { ok: false, error: "Indica al menos la autoridad municipal y la sede." };
   if (!/^data:image\/png;base64,[A-Za-z0-9+/=]+$/.test(input.firma) || input.firma.length > 300_000) return { ok: false, error: "Dibuja tu firma en el recuadro." };
   try {
-    mutarDB((db) => {
+    await mutarDB((db) => {
       const j = db.jornadas.find((x) => x.id === input.jornadaId);
       const r = j?.requisitos.find((x) => x.clave === "carta_compromiso");
       if (!j || !r) throw new Error("No se encontró el requisito.");
@@ -254,7 +254,7 @@ export async function guardarFicha(input: {
   const f = input.ficha;
   if (f.internet.length === 0) return { ok: false, error: "Indica qué señal o internet hay en el lugar (o elige \"Ninguna\")." };
   try {
-    const efectos = mutarDB((db) => {
+    const efectos = await mutarDB((db) => {
       const j = db.jornadas.find((x) => x.id === input.jornadaId);
       if (!j) throw new Error("Jornada no encontrada.");
       const ahora = new Date().toISOString();
@@ -308,7 +308,7 @@ export async function guardarFicha(input: {
 
 export async function marcarAtendido(input: { jornadaId: string; mensajeId: string }): Promise<Resultado> {
   await exigirEira();
-  mutarDB((db) => {
+  await mutarDB((db) => {
     const m = db.jornadas.find((x) => x.id === input.jornadaId)?.mensajes.find((x) => x.id === input.mensajeId);
     if (m) m.atendido = true;
   });
@@ -356,7 +356,7 @@ export async function crearJornada(
   const fecha = fechaMx(a, m - 1, d, 9).toISOString();
   const creadaEn = new Date().toISOString();
 
-  const res = mutarDB((db) => {
+  const res = await mutarDB((db) => {
     const base = `${slug(input.municipio)}-${a}`;
     let token = base;
     let n = 2;
@@ -404,7 +404,7 @@ export async function crearJornada(
 /** Restaura los datos de demostración. */
 export async function reiniciarDemo(): Promise<Resultado> {
   await exigirEira();
-  reiniciarDB();
+  await reiniciarDB();
   revalidarTodo();
   return { ok: true };
 }

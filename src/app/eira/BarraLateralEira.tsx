@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useTransition } from "react";
-import { Bell, FileStack, LayoutDashboard, Landmark, LogOut, Plus, RotateCcw, Send, MapPin } from "lucide-react";
+import { Bell, LayoutDashboard, Landmark, LogOut, Plus, RotateCcw, MapPin } from "lucide-react";
 import { LogoEira } from "@/components/LogoEira";
 import { reiniciarDemo } from "@/lib/actions";
 import { cerrarSesionEira } from "@/lib/auth-actions";
@@ -23,10 +23,6 @@ export function BarraLateralEira({ jornadas, mensajesPendientes }: { jornadas: I
   const nav = [
     { href: "/eira", texto: "Tablero de jornadas", icono: LayoutDashboard, activo: ruta === "/eira" },
     { href: "/eira/jornadas/nueva", texto: "Nueva jornada", icono: Plus, activo: ruta === "/eira/jornadas/nueva" },
-  ];
-  const proximamente = [
-    { texto: "Plantillas", icono: FileStack },
-    { texto: "Recordatorios", icono: Send },
   ];
 
   return (
@@ -54,12 +50,6 @@ export function BarraLateralEira({ jornadas, mensajesPendientes }: { jornadas: I
             {n.activo && <span className="absolute left-0 top-2 h-6 w-1 rounded-r-full bg-rosa" />}
             <n.icono className="h-[18px] w-[18px]" /> {n.texto}
           </Link>
-        ))}
-        {proximamente.map((n) => (
-          <span key={n.texto} className="flex cursor-not-allowed items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-300">
-            <n.icono className="h-[18px] w-[18px]" /> {n.texto}
-            <span className="ml-auto rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-400">Fase 2</span>
-          </span>
         ))}
       </nav>
 

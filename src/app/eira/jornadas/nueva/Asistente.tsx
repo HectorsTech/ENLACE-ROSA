@@ -315,7 +315,7 @@ export function Asistente({ fechaSugerida, fechaMinima }: { fechaSugerida: strin
               <FileSignature className="mt-0.5 h-5 w-5 shrink-0 text-rosa" />
               <p className="text-pizarra-suave">
                 La carta compromiso se generará con las cláusulas institucionales de EIRA bloqueadas. El municipio completará los
-                campos variables desde su portal (disponible en Fase 2).
+                campos variables, la firmará con el mouse y la enviará a EIRA desde su portal.
               </p>
             </div>
             {error && <p className="text-sm font-medium text-estado-observado">{error}</p>}

@@ -19,7 +19,7 @@ const ENLACES: Record<string, (token: string) => { href: string; texto: string }
 
 export default async function PortalMunicipal({ params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;
-  const j = jornadaPorToken(decodeURIComponent(token));
+  const j = await jornadaPorToken(decodeURIComponent(token));
   if (!j) notFound();
 
   const ahora = Date.now();

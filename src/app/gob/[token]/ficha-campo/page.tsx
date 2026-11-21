@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 
 export default async function FichaCampo({ params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;
-  const j = jornadaPorToken(decodeURIComponent(token));
+  const j = await jornadaPorToken(decodeURIComponent(token));
   if (!j) notFound();
   const { actualizadoEn: _omit, ...inicial } = j.ficha ?? { ...FICHA_VACIA, actualizadoEn: "" };
 

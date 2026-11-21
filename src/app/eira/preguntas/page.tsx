@@ -6,8 +6,8 @@ import { BotonAtendido } from "../jornadas/[id]/Acciones";
 
 export const dynamic = "force-dynamic";
 
-export default function Preguntas() {
-  const pendientes = listarJornadas()
+export default async function Preguntas() {
+  const pendientes = (await listarJornadas())
     .flatMap((j) => j.mensajes.filter((m) => !m.atendido).map((m) => ({ j, m, req: j.requisitos.find((r) => r.id === m.requisitoId) })))
     .sort((a, b) => +new Date(b.m.fecha) - +new Date(a.m.fecha));
 

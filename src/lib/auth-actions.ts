@@ -28,7 +28,7 @@ export async function cerrarSesionEira() {
 
 export async function entrarMunicipal(_: EstadoForm, datos: FormData): Promise<EstadoForm> {
   const id = String(datos.get("id") ?? "").trim().toLowerCase();
-  const j = id ? jornadaPorToken(id) : undefined;
+  const j = id ? await jornadaPorToken(id) : undefined;
   if (!j) return { error: "No encontramos ese ID. Revisa el enlace que te envió EIRA." };
   redirect(`/gob/${j.token}`);
 }

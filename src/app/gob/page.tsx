@@ -4,8 +4,8 @@ import { FormIdMunicipal } from "./FormIdMunicipal";
 
 export const dynamic = "force-dynamic";
 
-export default function AccesoGob() {
-  const ids = listarJornadas().map((j) => j.token);
+export default async function AccesoGob() {
+  const ids = (await listarJornadas()).map((j) => j.token);
   return (
     <div className="mx-auto max-w-md space-y-8 py-8 text-center">
       <div>

@@ -13,8 +13,8 @@ const PASOS = [
   { n: 3, t: "Luz Verde Logística", d: "EIRA revisa, aprueba u observa, y solo moviliza al equipo cuando todo lo crítico está listo." },
 ];
 
-export default function Inicio() {
-  const jornadas = listarJornadas();
+export default async function Inicio() {
+  const jornadas = await listarJornadas();
   const enRiesgo = jornadas.filter((j) => diagnostico(j).semaforo === "riesgo").length;
   const listas = jornadas.filter((j) => diagnostico(j).semaforo === "luz_verde").length;
   const promedio = Math.round(jornadas.reduce((a, j) => a + progreso(j), 0) / Math.max(1, jornadas.length));

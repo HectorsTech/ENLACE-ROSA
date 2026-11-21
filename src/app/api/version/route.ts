@@ -3,7 +3,7 @@ import { leerDB } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
-export function GET() {
-  const db = leerDB();
+export async function GET() {
+  const db = await leerDB();
   return NextResponse.json({ version: db.version, actualizadoEn: db.actualizadoEn });
 }

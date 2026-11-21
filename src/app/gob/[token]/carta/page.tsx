@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 
 export default async function CartaCompromiso({ params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;
-  const j = jornadaPorToken(decodeURIComponent(token));
+  const j = await jornadaPorToken(decodeURIComponent(token));
   if (!j) notFound();
 
   const req = j.requisitos.find((r) => r.clave === "carta_compromiso");

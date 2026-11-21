@@ -9,8 +9,8 @@ import { BuscadorJornadas } from "./BuscadorJornadas";
 
 export const dynamic = "force-dynamic";
 
-export default function LayoutEira({ children }: { children: React.ReactNode }) {
-  const jornadas = listarJornadas();
+export default async function LayoutEira({ children }: { children: React.ReactNode }) {
+  const jornadas = await listarJornadas();
   const items = jornadas.map((j) => ({ id: j.id, municipio: j.municipio, estado: j.estado, sede: j.sede, token: j.token, semaforo: diagnostico(j).semaforo }));
   const mensajes = jornadas.reduce((acc, j) => acc + j.mensajes.filter((m) => !m.atendido).length, 0);
 

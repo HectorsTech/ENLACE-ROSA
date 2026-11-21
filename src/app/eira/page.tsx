@@ -31,7 +31,7 @@ const FILTROS = [
 export default async function TableroEira({ searchParams }: { searchParams: Promise<{ filtro?: string }> }) {
   const { filtro = "todas" } = await searchParams;
   const ahora = Date.now();
-  const todas = listarJornadas()
+  const todas = (await listarJornadas())
     .map((j) => ({ j, d: diagnostico(j, ahora), p: progreso(j), c: conteo(j), v72: vencenEn(j, 72, ahora), obs: observados(j) }))
     .sort((a, b) => a.d.urgencia - b.d.urgencia);
 
@@ -251,7 +251,6 @@ export default async function TableroEira({ searchParams }: { searchParams: Prom
               <li>• WhatsApp primero; si no es posible, correo.</li>
               <li>• Crítico a menos de 48 h → aviso al coordinador.</li>
             </ul>
-            <p className="mt-3 text-[11px] font-semibold text-rosa-700">Envío de recordatorios disponible en Fase 2.</p>
           </div>
         </aside>
       </div>

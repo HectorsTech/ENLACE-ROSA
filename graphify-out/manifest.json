@@ -5,9 +5,9 @@
     "semantic_hash": "9430769833db8646880c5198dc80c450"
   },
   "package.json": {
-    "mtime": 1795287734.5829687,
-    "ast_hash": "cbd2a22415c9f83f2b4eed95baac7535",
-    "semantic_hash": "cbd2a22415c9f83f2b4eed95baac7535"
+    "mtime": 1795294323.3824968,
+    "ast_hash": "21c98c9288393d5f75f72699e6f64174",
+    "semantic_hash": ""
   },
   "postcss.config.mjs": {
     "mtime": 1795287392.9340527,
@@ -20,109 +20,109 @@
     "semantic_hash": "5b8f76af78f0836b50995b1c4d47b138"
   },
   "src/app/eira/BarraLateralEira.tsx": {
-    "mtime": 1795287814.4061768,
-    "ast_hash": "d735fe836f0fe171700e0114f00f014c",
-    "semantic_hash": "d735fe836f0fe171700e0114f00f014c"
+    "mtime": 1795294658.1833665,
+    "ast_hash": "de85e0e89ed32d660eaa2c1426bbcc3a",
+    "semantic_hash": ""
   },
   "src/app/eira/jornadas/[id]/Acciones.tsx": {
-    "mtime": 1795287899.8706148,
+    "mtime": 1795289675.9712813,
     "ast_hash": "6be3d68ce8a03e4371ad5761c2028788",
     "semantic_hash": "6be3d68ce8a03e4371ad5761c2028788"
   },
   "src/app/eira/jornadas/[id]/RevisionRequisito.tsx": {
-    "mtime": 1795287899.8306813,
-    "ast_hash": "b3b4295b99c9daef48ba433a8b733855",
-    "semantic_hash": "b3b4295b99c9daef48ba433a8b733855"
+    "mtime": 1795293147.2130485,
+    "ast_hash": "68821463503d903be66f4eca532f95cd",
+    "semantic_hash": ""
   },
   "src/app/eira/jornadas/[id]/page.tsx": {
-    "mtime": 1795287940.7802012,
-    "ast_hash": "33be5c4e3c5032662929cfbd6e93d8c7",
-    "semantic_hash": "33be5c4e3c5032662929cfbd6e93d8c7"
+    "mtime": 1795294665.8849957,
+    "ast_hash": "56c0e995a1691a106ed25c48735e51c2",
+    "semantic_hash": ""
   },
   "src/app/eira/jornadas/nueva/Asistente.tsx": {
-    "mtime": 1795288005.28234,
-    "ast_hash": "295259eda10462e08d15835688b45a0a",
-    "semantic_hash": "295259eda10462e08d15835688b45a0a"
+    "mtime": 1795293147.2121627,
+    "ast_hash": "525c45092080dcd2097c4e42f9486373",
+    "semantic_hash": ""
   },
   "src/app/eira/jornadas/nueva/page.tsx": {
-    "mtime": 1795288005.263097,
-    "ast_hash": "d0c9cc27d793c7cab795222b0e7b6510",
-    "semantic_hash": "d0c9cc27d793c7cab795222b0e7b6510"
+    "mtime": 1795289815.7629633,
+    "ast_hash": "09cefe27f4eb6e84274a118103c33610",
+    "semantic_hash": ""
   },
   "src/app/eira/layout.tsx": {
-    "mtime": 1795287814.4246163,
-    "ast_hash": "effd4c6da313fadd16e3e29b85017160",
-    "semantic_hash": "effd4c6da313fadd16e3e29b85017160"
+    "mtime": 1795294658.1843712,
+    "ast_hash": "8d15f889846853686f6000d633d8702d",
+    "semantic_hash": ""
   },
   "src/app/eira/page.tsx": {
-    "mtime": 1795287861.6226912,
-    "ast_hash": "479022fc813b3377d73063ec712f812d",
-    "semantic_hash": "479022fc813b3377d73063ec712f812d"
+    "mtime": 1795294166.1668258,
+    "ast_hash": "df6451857d3d074eb5f76b01a513c8bd",
+    "semantic_hash": ""
   },
   "src/app/gob/[token]/TarjetaRequisito.tsx": {
-    "mtime": 1795288672.900198,
-    "ast_hash": "e1df48ec74135cea467c7d4803fbac68",
-    "semantic_hash": "e1df48ec74135cea467c7d4803fbac68"
+    "mtime": 1795294697.6062803,
+    "ast_hash": "a58b74bdd7955be17f13e6ba52c76b81",
+    "semantic_hash": ""
   },
   "src/app/gob/[token]/page.tsx": {
-    "mtime": 1795288674.4078102,
-    "ast_hash": "e86f46d41e3d097ae0b69393a57a5081",
-    "semantic_hash": "e86f46d41e3d097ae0b69393a57a5081"
+    "mtime": 1795294697.8693497,
+    "ast_hash": "94e991ae561f95c0b87edb54720868ad",
+    "semantic_hash": ""
   },
   "src/app/gob/layout.tsx": {
-    "mtime": 1795288029.2842171,
-    "ast_hash": "d8d3ea3d3860f9acaa9ddd21b4f3ac86",
-    "semantic_hash": "d8d3ea3d3860f9acaa9ddd21b4f3ac86"
+    "mtime": 1795294697.8977592,
+    "ast_hash": "437b38fefee158dcbca8060e31dd428c",
+    "semantic_hash": ""
   },
   "src/app/gob/page.tsx": {
-    "mtime": 1795288029.3033578,
-    "ast_hash": "ffb7ab9dfe1303a736eb2a62c4be37b3",
-    "semantic_hash": "ffb7ab9dfe1303a736eb2a62c4be37b3"
+    "mtime": 1795294511.6953757,
+    "ast_hash": "3950d4d87e73293c4d6e1faf3f829366",
+    "semantic_hash": ""
   },
   "src/app/layout.tsx": {
-    "mtime": 1795287788.829064,
-    "ast_hash": "6d1780eb84b6ad45f410fbd4b456378b",
-    "semantic_hash": "6d1780eb84b6ad45f410fbd4b456378b"
+    "mtime": 1795289691.1170635,
+    "ast_hash": "e39b2d97ecb200470e0f919f49ad857d",
+    "semantic_hash": ""
   },
   "src/app/page.tsx": {
-    "mtime": 1795287788.8660474,
-    "ast_hash": "f711ca9bd417e6a3a735797a56983677",
-    "semantic_hash": "f711ca9bd417e6a3a735797a56983677"
+    "mtime": 1795289815.4164674,
+    "ast_hash": "afb25feb47a66ca3cdd7542e2b3768a2",
+    "semantic_hash": ""
   },
   "src/components/AutoRefresco.tsx": {
-    "mtime": 1795287767.32928,
+    "mtime": 1795289676.082673,
     "ast_hash": "48a18ac91f014568cecb9f5629ec5f9e",
     "semantic_hash": "48a18ac91f014568cecb9f5629ec5f9e"
   },
   "src/components/Historial.tsx": {
-    "mtime": 1795287767.3855824,
-    "ast_hash": "4c4d730de751d503c57f3b530c85b57f",
-    "semantic_hash": "4c4d730de751d503c57f3b530c85b57f"
+    "mtime": 1795289676.0941918,
+    "ast_hash": "47f711df0b024b09500189422ff6fe29",
+    "semantic_hash": ""
   },
   "src/components/Insignias.tsx": {
-    "mtime": 1795287767.3052905,
-    "ast_hash": "ce38b65c3407a181f8a4e91322a59da3",
-    "semantic_hash": "ce38b65c3407a181f8a4e91322a59da3"
+    "mtime": 1795294512.7487638,
+    "ast_hash": "e1a286301f417407f4c51c03a2870d21",
+    "semantic_hash": ""
   },
   "src/components/LogoEira.tsx": {
-    "mtime": 1795287767.286621,
+    "mtime": 1795289676.1072018,
     "ast_hash": "30af64bf982353a9cbccee6551b7495e",
     "semantic_hash": "30af64bf982353a9cbccee6551b7495e"
   },
   "src/lib/actions.ts": {
-    "mtime": 1795287668.4234369,
-    "ast_hash": "ac5a9be2028cc463180a6be8cd18cc27",
-    "semantic_hash": "ac5a9be2028cc463180a6be8cd18cc27"
+    "mtime": 1795294586.2919967,
+    "ast_hash": "93a846cd4811168f4f00dacd4846e615",
+    "semantic_hash": ""
   },
   "src/lib/catalogo.ts": {
-    "mtime": 1795287500.2938166,
-    "ast_hash": "73bb8705f5c81737f08c60110142d3c3",
-    "semantic_hash": "73bb8705f5c81737f08c60110142d3c3"
+    "mtime": 1795294512.747761,
+    "ast_hash": "58e2495a6392ea5634e885eed8deaad5",
+    "semantic_hash": ""
   },
   "src/lib/db.ts": {
-    "mtime": 1795287673.8998818,
-    "ast_hash": "6c09d1057ba9094813047dec2d0f5a9e",
-    "semantic_hash": "6c09d1057ba9094813047dec2d0f5a9e"
+    "mtime": 1795293135.3356297,
+    "ast_hash": "4da9a2853797b8e5dd63ca98d1f16660",
+    "semantic_hash": ""
   },
   "src/lib/fechas.ts": {
     "mtime": 1795287522.8214695,
@@ -130,28 +130,133 @@
     "semantic_hash": "c839d4453321d3a52288946810fa8f15"
   },
   "src/lib/logica.ts": {
-    "mtime": 1795287543.3025398,
-    "ast_hash": "d23c76e749fc61680f5ba99336a21372",
-    "semantic_hash": "d23c76e749fc61680f5ba99336a21372"
+    "mtime": 1795293973.4028983,
+    "ast_hash": "4edf03e0f5a2b33f59e023e88e63f790",
+    "semantic_hash": ""
   },
   "src/lib/seed.ts": {
-    "mtime": 1795287587.7039018,
-    "ast_hash": "139a16c5658c54f19c079fc33b8a68bd",
-    "semantic_hash": "139a16c5658c54f19c079fc33b8a68bd"
+    "mtime": 1795294539.6625464,
+    "ast_hash": "c6c6c01608d649b01b37d627a62e6922",
+    "semantic_hash": ""
   },
   "src/lib/types.ts": {
-    "mtime": 1795287500.2835176,
-    "ast_hash": "9d0246bf7422ec79785edc1a9a6fc2a9",
-    "semantic_hash": "9d0246bf7422ec79785edc1a9a6fc2a9"
+    "mtime": 1795294539.7596169,
+    "ast_hash": "76a210c8573f598f2991847463f38e67",
+    "semantic_hash": ""
   },
   "tailwind.config.ts": {
-    "mtime": 1795287731.9231315,
-    "ast_hash": "27a15e9caa93840cbc3d7503d7186599",
-    "semantic_hash": "27a15e9caa93840cbc3d7503d7186599"
+    "mtime": 1795289684.1868458,
+    "ast_hash": "d6c7d8381be71c5483bbeb4d210ce9f7",
+    "semantic_hash": ""
   },
   "tsconfig.json": {
     "mtime": 1795287392.9055223,
     "ast_hash": "b7ef4c7bf2a5e75e33097a76362a22ee",
     "semantic_hash": "b7ef4c7bf2a5e75e33097a76362a22ee"
+  },
+  "src/app/eira/BuscadorJornadas.tsx": {
+    "mtime": 1795294644.490393,
+    "ast_hash": "7cbbc0e05f77b9016fc5e7eb5c603b6d",
+    "semantic_hash": ""
+  },
+  "src/app/eira/jornadas/[id]/carta-pdf/route.ts": {
+    "mtime": 1795294574.1324315,
+    "ast_hash": "34ed75d1ffdc7eb277a9dc028df5e3c2",
+    "semantic_hash": ""
+  },
+  "src/app/eira/preguntas/page.tsx": {
+    "mtime": 1795294645.586615,
+    "ast_hash": "1968120047d729b7edfb110e196a2cfa",
+    "semantic_hash": ""
+  },
+  "src/app/gob/FormIdMunicipal.tsx": {
+    "mtime": 1795294512.437932,
+    "ast_hash": "7c3a5b4d35fa608870fc456c8e407640",
+    "semantic_hash": ""
+  },
+  "src/app/gob/[token]/EstimadoPersonas.tsx": {
+    "mtime": 1795293180.0206563,
+    "ast_hash": "3ff814ba27d579c7d9032e44eefd0830",
+    "semantic_hash": ""
+  },
+  "src/app/gob/[token]/carta/CartaEditor.tsx": {
+    "mtime": 1795294616.3763447,
+    "ast_hash": "db26e31ced2e15e973e33e40b92280ce",
+    "semantic_hash": ""
+  },
+  "src/app/gob/[token]/carta/DocumentoCarta.tsx": {
+    "mtime": 1795294744.3394718,
+    "ast_hash": "15d90842e0f642f50267242fcc80e6e6",
+    "semantic_hash": ""
+  },
+  "src/app/gob/[token]/carta/FirmaPad.tsx": {
+    "mtime": 1795294616.081576,
+    "ast_hash": "06d65a17aaf1f1352a82783f65c635f9",
+    "semantic_hash": ""
+  },
+  "src/app/gob/[token]/carta/page.tsx": {
+    "mtime": 1795294616.3763447,
+    "ast_hash": "bd1ea6b0f43328b86f0a575ad7f878f9",
+    "semantic_hash": ""
+  },
+  "src/app/gob/[token]/carta/pdf/route.ts": {
+    "mtime": 1795294574.1103363,
+    "ast_hash": "d621b7327a07fab503fe6995fc9b240f",
+    "semantic_hash": ""
+  },
+  "src/app/gob/[token]/ficha-campo/FichaForm.tsx": {
+    "mtime": 1795294125.3690064,
+    "ast_hash": "107cdbc0101d6e3a9fbafe1ec718041a",
+    "semantic_hash": ""
+  },
+  "src/app/gob/[token]/ficha-campo/page.tsx": {
+    "mtime": 1795294126.608394,
+    "ast_hash": "6a40689bed87ef36f89a90b9e6719c7b",
+    "semantic_hash": ""
+  },
+  "src/app/login-eira/FormLoginEira.tsx": {
+    "mtime": 1795294494.412194,
+    "ast_hash": "aa6b0b880fa9cdcb8cb229fce3bcd2ed",
+    "semantic_hash": ""
+  },
+  "src/app/login-eira/page.tsx": {
+    "mtime": 1795294493.8521369,
+    "ast_hash": "9b905f7366f569c566febc34ba841ebb",
+    "semantic_hash": ""
+  },
+  "src/lib/auth-actions.ts": {
+    "mtime": 1795294492.3293242,
+    "ast_hash": "c016fcd89af18fd4cd063d09a2393ea8",
+    "semantic_hash": ""
+  },
+  "src/lib/auth.ts": {
+    "mtime": 1795294491.2892354,
+    "ast_hash": "691bef9f559eec89d4f52fb48ee756ca",
+    "semantic_hash": ""
+  },
+  "src/lib/carta.ts": {
+    "mtime": 1795294744.3394718,
+    "ast_hash": "ef605358c5ef9f1f357bb5ae2d55ce12",
+    "semantic_hash": ""
+  },
+  "src/lib/clausulas.ts": {
+    "mtime": 1795294744.3394718,
+    "ast_hash": "6790ff6dc5a085b5a6e61c78a7d6e056",
+    "semantic_hash": ""
+  },
+  "src/lib/ficha.ts": {
+    "mtime": 1795294024.5969963,
+    "ast_hash": "378be4c7393a1817f456d34a709136f0",
+    "semantic_hash": ""
+  },
+  "src/middleware.ts": {
+    "mtime": 1795294493.2447753,
+    "ast_hash": "965805df816ec02dcd54187599ab162d",
+    "semantic_hash": ""
+  },
+  ".agents/rules/graphify.md": {
+    "mtime": 1795289064.6586108,
+    "ast_hash": "0110a11ada711fa0890ca93b3aa77cbf",
+    "semantic_hash": ""
   }
 }

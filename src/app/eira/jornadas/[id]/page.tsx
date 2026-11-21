@@ -44,7 +44,7 @@ export default async function Expediente({
 }) {
   const { id } = await params;
   const { tab = "expediente" } = await searchParams;
-  const j = jornadaPorId(id);
+  const j = await jornadaPorId(id);
   if (!j) notFound();
 
   const ahora = Date.now();
@@ -243,7 +243,7 @@ function Dato({ icono: Icono, titulo, valor, pie }: { icono: typeof MapPin; titu
 
 const ETIQUETA_INTERNET = { wifi: "Wi-Fi", telcel: "Telcel", altan_cfe: "Altán / CFE", ninguna: "Ninguna" };
 
-function Condiciones({ j }: { j: NonNullable<ReturnType<typeof jornadaPorId>> }) {
+function Condiciones({ j }: { j: NonNullable<Awaited<ReturnType<typeof jornadaPorId>>> }) {
   const f = j.ficha;
   if (!f) {
     return (
